@@ -45,15 +45,27 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      const { token: newToken, user: userData } = response.data;
+      // Mock login - accept any email/password combination
+      // In a real app, this would validate against the backend
+      const mockUser = {
+        _id: 'user123',
+        name: 'Demo User',
+        email: email,
+        phone: '+1 (555) 123-4567',
+        role: 'owner', // Default to owner for demo
+        bio: 'Demo user for testing purposes',
+        profilePicture: null,
+        createdAt: new Date().toISOString()
+      };
       
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
-      setUser(userData);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      const mockToken = 'mock-jwt-token-' + Date.now();
       
-      toast.success('Login successful!');
+      localStorage.setItem('token', mockToken);
+      setToken(mockToken);
+      setUser(mockUser);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`;
+      
+      toast.success('Login successful! (Demo Mode)');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
@@ -64,15 +76,26 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await axios.post('/api/auth/register', userData);
-      const { token: newToken, user } = response.data;
+      // Mock registration - create a new user
+      const mockUser = {
+        _id: 'user' + Date.now(),
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        role: userData.role,
+        bio: userData.bio || '',
+        profilePicture: null,
+        createdAt: new Date().toISOString()
+      };
       
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
-      setUser(user);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      const mockToken = 'mock-jwt-token-' + Date.now();
       
-      toast.success('Registration successful!');
+      localStorage.setItem('token', mockToken);
+      setToken(mockToken);
+      setUser(mockUser);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`;
+      
+      toast.success('Registration successful! (Demo Mode)');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed';
@@ -91,9 +114,10 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     try {
-      const response = await axios.put('/api/auth/profile', profileData);
-      setUser(response.data.user);
-      toast.success('Profile updated successfully!');
+      // Mock profile update
+      const updatedUser = { ...user, ...profileData };
+      setUser(updatedUser);
+      toast.success('Profile updated successfully! (Demo Mode)');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Profile update failed';

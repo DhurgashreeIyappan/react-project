@@ -26,25 +26,86 @@ const getStatusColor = (status) => {
 const getStatusIcon = (status) => {
   switch (status) {
     case 'pending':
-      return <FaClock className="text-yellow-600" />;
+      return <FaClock className="w-4 h-4" />;
     case 'accepted':
-      return <FaCheck className="text-green-600" />;
+      return <FaCheck className="w-4 h-4" />;
     case 'rejected':
-      return <FaTimes className="text-red-600" />;
+      return <FaTimes className="w-4 h-4" />;
     case 'completed':
-      return <FaCheck className="text-blue-600" />;
+      return <FaCheck className="w-4 h-4" />;
     case 'cancelled':
-      return <FaTimes className="text-gray-600" />;
+      return <FaTimes className="w-4 h-4" />;
     default:
-      return <FaClock className="text-gray-600" />;
+      return <FaClock className="w-4 h-4" />;
   }
 };
 
+// Mock data for bookings
+const mockBookings = [
+  {
+    _id: 'booking1',
+    property: {
+      _id: 'prop1',
+      title: 'Modern Downtown Apartment',
+      location: 'Downtown, City Center',
+      price: 2500,
+      images: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop']
+    },
+    user: {
+      name: 'John Doe',
+      email: 'john@example.com'
+    },
+    startDate: '2024-02-01',
+    endDate: '2024-03-01',
+    status: 'pending',
+    message: 'I would like to rent this apartment for the month of February.',
+    createdAt: '2024-01-15'
+  },
+  {
+    _id: 'booking2',
+    property: {
+      _id: 'prop2',
+      title: 'Cozy Studio Near University',
+      location: 'University District',
+      price: 1200,
+      images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop']
+    },
+    user: {
+      name: 'Sarah Smith',
+      email: 'sarah@example.com'
+    },
+    startDate: '2024-01-20',
+    endDate: '2024-02-20',
+    status: 'accepted',
+    message: 'Perfect location for my studies!',
+    createdAt: '2024-01-10'
+  },
+  {
+    _id: 'booking3',
+    property: {
+      _id: 'prop3',
+      title: 'Luxury Villa with Pool',
+      location: 'Hillside, Suburbs',
+      price: 4500,
+      images: ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop']
+    },
+    user: {
+      name: 'Mike Johnson',
+      email: 'mike@example.com'
+    },
+    startDate: '2024-02-15',
+    endDate: '2024-03-15',
+    status: 'completed',
+    message: 'Amazing property, had a great stay!',
+    createdAt: '2024-01-05'
+  }
+];
+
 const MyBookings = () => {
-  const { user, isOwner } = useAuth();
+  const { isOwner } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('pending');
+  const [activeTab, setActiveTab] = useState('all');
 
   useEffect(() => {
     fetchBookings();
@@ -52,9 +113,9 @@ const MyBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const endpoint = isOwner() ? '/api/bookings/owner' : '/api/bookings/renter';
-      const response = await axios.get(endpoint);
-      setBookings(response.data.bookings);
+      // Use mock data instead of API call
+      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+      setBookings(mockBookings);
     } catch (error) {
       console.error('Error fetching bookings:', error);
       toast.error('Failed to fetch bookings');
@@ -65,9 +126,19 @@ const MyBookings = () => {
 
   const handleStatusUpdate = async (bookingId, status) => {
     try {
-      await axios.put(`/api/bookings/${bookingId}/status`, { status });
-      toast.success(`Booking ${status === 'accepted' ? 'accepted' : 'rejected'} successfully`);
-      fetchBookings(); // Refresh the list
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Update local state
+      setBookings(prev => 
+        prev.map(booking => 
+          booking._id === bookingId 
+            ? { ...booking, status } 
+            : booking
+        )
+      );
+      
+      toast.success(`Booking ${status === 'accepted' ? 'accepted' : 'rejected'} successfully (Demo Mode)`);
     } catch (error) {
       console.error('Error updating booking status:', error);
       toast.error('Failed to update booking status');
