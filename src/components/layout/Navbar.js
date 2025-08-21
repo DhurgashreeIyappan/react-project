@@ -5,7 +5,7 @@ import { FaHome, FaUser, FaSignOutAlt, FaPlus, FaList, FaBookmark } from 'react-
 import { motion } from 'framer-motion';
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout, isOwner } = useAuth();
+  const { user, isAuthenticated, logout, isOwner, isRenter } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -17,9 +17,15 @@ const Navbar = () => {
   const navItems = [
     { name: 'Home', path: '/', icon: <FaHome /> },
     { name: 'Properties', path: '/properties', icon: <FaList /> },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' },
   ];
 
-  const userMenuItems = isOwner ? [
+  const userMenuItems = isOwner() ? [
+    { name: 'Add Property', path: '/add-property', icon: <FaPlus /> },
+    { name: 'My Properties', path: '/my-properties', icon: <FaList /> },
+    { name: 'My Bookings', path: '/my-bookings', icon: <FaBookmark /> },
+  ] : isRenter() ? [
     { name: 'Add Property', path: '/add-property', icon: <FaPlus /> },
     { name: 'My Properties', path: '/my-properties', icon: <FaList /> },
     { name: 'My Bookings', path: '/my-bookings', icon: <FaBookmark /> },
@@ -41,13 +47,13 @@ const Navbar = () => {
                 <FaHome className="text-white text-xl" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                RentEase
+                RentNest
               </span>
             </Link>
           </motion.div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Desktop Navigation on right */}
+          <div className="hidden md:flex items-center space-x-8 ml-auto">
             {navItems.map((item) => (
               <motion.div
                 key={item.name}

@@ -1,20 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useProperty } from '../../context/PropertyContext';
-import { FaHome, FaEdit, FaTrash, FaEye, FaPlus, FaMapMarkerAlt, FaDollarSign, FaStar } from 'react-icons/fa';
+import { FaHome, FaEdit, FaTrash, FaEye, FaPlus, FaMapMarkerAlt, FaStar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
 
 const MyProperties = () => {
   const { getUserProperties, deleteProperty } = useProperty();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProperties();
-  }, []);
-
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     try {
       const userProperties = await getUserProperties();
       setProperties(userProperties);
@@ -23,7 +18,11 @@ const MyProperties = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getUserProperties]);
+
+  useEffect(() => {
+    fetchProperties();
+  }, [fetchProperties]);
 
   const handleDeleteProperty = async (propertyId) => {
     if (window.confirm('Are you sure you want to delete this property?')) {

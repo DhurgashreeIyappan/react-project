@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProperty } from '../../context/PropertyContext';
+import { useAuth } from '../../context/AuthContext';
 import PropertyCard from '../properties/PropertyCard';
 import { FaSearch, FaMapMarkerAlt, FaHeart, FaStar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const Home = () => {
   const { properties, loading } = useProperty();
+  const { isRenter } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
@@ -132,64 +134,66 @@ const Home = () => {
        </div>
       </section>
 
-      {/* Featured Properties Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-              Featured Properties
-            </h2>
-            <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-              Discover our handpicked selection of premium rental properties in prime locations
-            </p>
-          </motion.div>
-
-          {loading ? (
-            <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            </div>
-          ) : (
+      {/* Featured Properties Section - Only show for non-renters */}
+      {!isRenter() && (
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
             <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
             >
-              {featuredProperties.map((property) => (
-                <motion.div
-                  key={property._id}
-                  variants={itemVariants}
-                  className="group"
-                >
-                  <PropertyCard property={property} showLink={true} />
-                </motion.div>
-              ))}
+              <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
+                Featured Properties
+              </h2>
+              <p className="text-lg text-text-secondary max-w-2xl mx-auto">
+                Discover our handpicked selection of premium rental properties in prime locations
+              </p>
             </motion.div>
-          )}
 
-          {/* View All Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center mt-12"
-          >
-            <Link
-              to="/properties"
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            {loading ? (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
+                {featuredProperties.map((property) => (
+                  <motion.div
+                    key={property._id}
+                    variants={itemVariants}
+                    className="group"
+                  >
+                    <PropertyCard property={property} showLink={true} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+
+            {/* View All Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-center mt-12"
             >
-              View All Properties
-              <FaSearch className="ml-2" />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+              <Link
+                to="/properties"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+              >
+                View All Properties
+                <FaSearch className="ml-2" />
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="py-20 bg-surfaceAlt">
@@ -201,7 +205,7 @@ const Home = () => {
             className="text-center mb-16"
           >
                          <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-4">
-               Why Choose RentEase?
+               Why Choose RentNest?
              </h2>
              <p className="text-lg text-text-secondary max-w-2xl mx-auto">
                We make finding and managing rental properties simple and enjoyable

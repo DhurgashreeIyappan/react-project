@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useProperty } from '../../context/PropertyContext';
-import { FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaStar, FaHeart, FaCalendar, FaUser } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
+import { FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaStar, FaHeart, FaCalendar, FaUser, FaEdit } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const { getPropertyById } = useProperty();
+  const { user, isOwner, isRenter } = useAuth();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
+
+  // Check if current user owns this property
+  const isPropertyOwner = property && user && (
+    (isOwner() && property.owner?._id === user.id) ||
+    (isRenter() && property.owner?._id === user.id) ||
+    (isRenter() && property.owner === user.id)
+  );
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -73,7 +82,18 @@ const PropertyDetail = () => {
           <div className="p-8">
             {/* Property Header */}
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{property.title}</h1>
+              <div className="flex justify-between items-start mb-2">
+                <h1 className="text-3xl font-bold text-gray-900">{property.title}</h1>
+                {isPropertyOwner && (
+                  <Link
+                    to={`/edit-property/${property._id}`}
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                  >
+                    <FaEdit className="mr-2" />
+                    Edit Property
+                  </Link>
+                )}
+              </div>
               <div className="flex items-center text-gray-600 mb-4">
                 <FaMapMarkerAlt className="text-primary mr-2" />
                 <span>{property.location}</span>

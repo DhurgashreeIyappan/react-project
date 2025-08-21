@@ -14,10 +14,10 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { name: 'Facebook', icon: <FaFacebook />, href: '#' },
-    { name: 'Twitter', icon: <FaTwitter />, href: '#' },
-    { name: 'Instagram', icon: <FaInstagram />, href: '#' },
-    { name: 'LinkedIn', icon: <FaLinkedin />, href: '#' },
+    { name: 'Facebook', icon: <FaFacebook />, href: 'https://facebook.com/RentNest' },
+    { name: 'Twitter', icon: <FaTwitter />, href: 'https://twitter.com/RentNest' },
+    { name: 'Instagram', icon: <FaInstagram />, href: 'https://instagram.com/RentNest' },
+    { name: 'LinkedIn', icon: <FaLinkedin />, href: 'https://linkedin.com/company/rentnest' },
   ];
 
   return (
@@ -42,7 +42,7 @@ const Footer = () => {
                   <FaHome className="text-white text-2xl" />
                 </div>
                 <span className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  RentEase
+                  RentNest
                 </span>
               </Link>
               <p className="text-gray-300 text-lg leading-relaxed max-w-md">
@@ -93,7 +93,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <FaEnvelope className="text-primary" />
-                <span>info@rentease.com</span>
+                <span>info@rentnest.com</span>
               </div>
             </div>
           </motion.div>
@@ -125,7 +125,7 @@ const Footer = () => {
 
             {/* Copyright */}
             <div className="text-gray-400 text-center md:text-right">
-              <p>&copy; {currentYear} RentEase. All rights reserved.</p>
+              <p>&copy; {currentYear} RentNest. All rights reserved.</p>
               <p className="text-sm mt-1">Made with ❤️ for better rental experiences</p>
             </div>
           </div>

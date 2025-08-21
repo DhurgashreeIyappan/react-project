@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import client from '../api/client';
 import toast from 'react-hot-toast';
 
 const PropertyContext = createContext();
@@ -235,62 +235,20 @@ export const PropertyProvider = ({ children }) => {
     furnished: '',
     petFriendly: '',
     availabilityDate: '',
+    bedroomsMin: '',
+    bathroomsMin: '',
   });
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchProperties = async (page = 1, searchFilters = {}) => {
     setLoading(true);
     try {
-      // Use mock data instead of API call for now
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Apply filters to mock data only if searchFilters has values
-      let filtered = [...mockProperties];
-      
-      // Only apply filters if searchFilters has actual values
-      const hasActiveFilters = Object.values(searchFilters).some(value => value !== '' && value !== undefined);
-      
-      if (hasActiveFilters) {
-        if (searchFilters.location) {
-          filtered = filtered.filter(p => 
-            p.location.toLowerCase().includes(searchFilters.location.toLowerCase())
-          );
-        }
-        
-        if (searchFilters.priceMin) {
-          filtered = filtered.filter(p => p.price >= parseInt(searchFilters.priceMin));
-        }
-        
-        if (searchFilters.priceMax) {
-          filtered = filtered.filter(p => p.price <= parseInt(searchFilters.priceMax));
-        }
-        
-        if (searchFilters.propertyType) {
-          filtered = filtered.filter(p => p.type === searchFilters.propertyType);
-        }
-        
-        if (searchFilters.furnished !== '') {
-          filtered = filtered.filter(p => p.furnished === (searchFilters.furnished === 'true'));
-        }
-        
-        if (searchFilters.petFriendly !== '') {
-          filtered = filtered.filter(p => p.petFriendly === (searchFilters.petFriendly === 'true'));
-        }
-      }
-      
-      // Pagination
-      const itemsPerPage = 12;
-      const startIndex = (page - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedProperties = filtered.slice(startIndex, endIndex);
-      
-      setProperties(filtered);
-      setFilteredProperties(paginatedProperties);
-      setTotalPages(Math.ceil(filtered.length / itemsPerPage));
-      setCurrentPage(page);
-      
-      toast.success(`Found ${filtered.length} properties`);
+      const params = { page, ...searchFilters, q: searchFilters.q || searchQuery };
+      const res = await client.get('/properties', { params });
+      setProperties(res.data.properties);
+      setFilteredProperties(res.data.properties);
+      setTotalPages(res.data.totalPages || 1);
+      setCurrentPage(res.data.page || 1);
     } catch (error) {
       console.error('Error fetching properties:', error);
       toast.error('Failed to fetch properties');
@@ -300,69 +258,67 @@ export const PropertyProvider = ({ children }) => {
   };
 
   const searchProperties = async (query) => {
+    // Only update query; filtering happens via applyFilters effect
     setSearchQuery(query);
-    if (!query.trim()) {
-      setFilteredProperties(properties);
-      return;
-    }
-
-    try {
-      // Use mock data for search
-      const filtered = mockProperties.filter(p => 
-        p.title.toLowerCase().includes(query.toLowerCase()) ||
-        p.description.toLowerCase().includes(query.toLowerCase()) ||
-        p.location.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredProperties(filtered);
-      toast.success(`Found ${filtered.length} properties matching "${query}"`);
-    } catch (error) {
-      console.error('Error searching properties:', error);
-      toast.error('Search failed');
-    }
   };
 
   const applyFilters = async () => {
-    const activeFilters = Object.fromEntries(
-      Object.entries(filters).filter(([_, value]) => value !== '')
-    );
-    
-    if (Object.keys(activeFilters).length === 0) {
-      setFilteredProperties(properties);
-      return;
-    }
-
     try {
-      // Apply filters to mock data
-      let filtered = [...mockProperties];
-      
-      if (activeFilters.location) {
-        filtered = filtered.filter(p => 
-          p.location.toLowerCase().includes(activeFilters.location.toLowerCase())
+      // Start from current properties (including added ones). If empty, fall back to mock.
+      let base = properties && properties.length > 0 ? [...properties] : [...mockProperties];
+
+      // Apply search query
+      const normalizedQuery = (searchQuery || '').toLowerCase().trim();
+      if (normalizedQuery) {
+        base = base.filter(p =>
+          (p.title || '').toLowerCase().includes(normalizedQuery) ||
+          (p.description || '').toLowerCase().includes(normalizedQuery) ||
+          (p.location || '').toLowerCase().includes(normalizedQuery)
         );
       }
-      
+
+      // Apply active filters
+      const activeFilters = Object.fromEntries(
+        Object.entries(filters).filter(([_, value]) => value !== '')
+      );
+
+      let filtered = [...base];
+
+      if (activeFilters.location) {
+        filtered = filtered.filter(p =>
+          (p.location || '').toLowerCase().includes(activeFilters.location.toLowerCase())
+        );
+      }
+
       if (activeFilters.priceMin) {
-        filtered = filtered.filter(p => p.price >= parseInt(activeFilters.priceMin));
+        filtered = filtered.filter(p => (p.price || 0) >= parseInt(activeFilters.priceMin));
       }
-      
+
       if (activeFilters.priceMax) {
-        filtered = filtered.filter(p => p.price <= parseInt(activeFilters.priceMax));
+        filtered = filtered.filter(p => (p.price || 0) <= parseInt(activeFilters.priceMax));
       }
-      
+
       if (activeFilters.propertyType) {
         filtered = filtered.filter(p => p.type === activeFilters.propertyType);
       }
-      
-      if (activeFilters.furnished !== '') {
-        filtered = filtered.filter(p => p.furnished === (activeFilters.furnished === 'true'));
+
+      if (activeFilters.furnished !== undefined && activeFilters.furnished !== '') {
+        filtered = filtered.filter(p => !!p.furnished === (activeFilters.furnished === 'true'));
       }
-      
-      if (activeFilters.petFriendly !== '') {
-        filtered = filtered.filter(p => p.petFriendly === (activeFilters.petFriendly === 'true'));
+
+      if (activeFilters.petFriendly !== undefined && activeFilters.petFriendly !== '') {
+        filtered = filtered.filter(p => !!p.petFriendly === (activeFilters.petFriendly === 'true'));
       }
-      
+
+      if (activeFilters.bedroomsMin) {
+        filtered = filtered.filter(p => (p.bedrooms || 0) >= parseInt(activeFilters.bedroomsMin));
+      }
+
+      if (activeFilters.bathroomsMin) {
+        filtered = filtered.filter(p => (p.bathrooms || 0) >= parseFloat(activeFilters.bathroomsMin));
+      }
+
       setFilteredProperties(filtered);
-      toast.success(`Found ${filtered.length} properties matching your filters`);
     } catch (error) {
       console.error('Error applying filters:', error);
       toast.error('Failed to apply filters');
@@ -371,21 +327,11 @@ export const PropertyProvider = ({ children }) => {
 
   const addProperty = async (propertyData) => {
     try {
-      // Simulate API call with mock data
-      const newProperty = {
-        _id: Date.now().toString(),
-        ...propertyData,
-        rating: 0,
-        reviews: 0,
-        owner: { name: 'Current User', email: 'user@example.com' },
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      
-      setProperties(prev => [newProperty, ...prev]);
-      setFilteredProperties(prev => [newProperty, ...prev]);
-      
+      const res = await client.post('/properties', propertyData);
+      setProperties(prev => [res.data.property, ...prev]);
+      setFilteredProperties(prev => [res.data.property, ...prev]);
       toast.success('Property added successfully!');
-      return { success: true, property: newProperty };
+      return { success: true, property: res.data.property };
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to add property';
       toast.error(message);
@@ -395,23 +341,10 @@ export const PropertyProvider = ({ children }) => {
 
   const updateProperty = async (id, propertyData) => {
     try {
-      // Simulate API call with mock data
-      const updatedProperty = {
-        _id: id,
-        ...propertyData,
-        rating: 4.5, // Keep existing rating
-        reviews: 10, // Keep existing reviews
-        owner: { name: 'Current User', email: 'user@example.com' },
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      
-      setProperties(prev => 
-        prev.map(prop => prop._id === id ? updatedProperty : prop)
-      );
-      setFilteredProperties(prev => 
-        prev.map(prop => prop._id === id ? updatedProperty : prop)
-      );
-      
+      const res = await client.put(`/properties/${id}`, propertyData);
+      const updatedProperty = res.data.property;
+      setProperties(prev => prev.map(prop => prop._id === id ? updatedProperty : prop));
+      setFilteredProperties(prev => prev.map(prop => prop._id === id ? updatedProperty : prop));
       toast.success('Property updated successfully!');
       return { success: true, property: updatedProperty };
     } catch (error) {
@@ -423,12 +356,9 @@ export const PropertyProvider = ({ children }) => {
 
   const deleteProperty = async (id) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
+      await client.delete(`/properties/${id}`);
       setProperties(prev => prev.filter(prop => prop._id !== id));
       setFilteredProperties(prev => prev.filter(prop => prop._id !== id));
-      
       toast.success('Property deleted successfully!');
       return { success: true };
     } catch (error) {
@@ -440,14 +370,8 @@ export const PropertyProvider = ({ children }) => {
 
   const getPropertyById = async (id) => {
     try {
-      // Use mock data instead of API call
-      const property = mockProperties.find(p => p._id === id);
-      if (property) {
-        return property;
-      } else {
-        // If not found in mock data, check if it's a user-added property
-        return properties.find(p => p._id === id) || null;
-      }
+      const res = await client.get(`/properties/${id}`);
+      return res.data.property;
     } catch (error) {
       console.error('Error fetching property:', error);
       toast.error('Failed to fetch property details');
@@ -457,10 +381,8 @@ export const PropertyProvider = ({ children }) => {
 
   const getUserProperties = async () => {
     try {
-      // For demo purposes, return a subset of mock properties as "user properties"
-      // In a real app, this would filter by the current user's ID
-      const userProperties = mockProperties.slice(0, 3); // Return first 3 as demo
-      return userProperties;
+      const res = await client.get('/properties/me/list');
+      return res.data.properties;
     } catch (error) {
       console.error('Error fetching user properties:', error);
       toast.error('Failed to fetch your properties');
@@ -477,6 +399,8 @@ export const PropertyProvider = ({ children }) => {
       furnished: '',
       petFriendly: '',
       availabilityDate: '',
+      bedroomsMin: '',
+      bathroomsMin: '',
     });
     setFilteredProperties(properties);
   };
@@ -487,7 +411,7 @@ export const PropertyProvider = ({ children }) => {
 
   useEffect(() => {
     applyFilters();
-  }, [filters]);
+  }, [filters, searchQuery, properties]);
 
   const value = {
     properties,

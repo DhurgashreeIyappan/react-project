@@ -1,9 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './components/pages/Home';
+import RenterDashboard from './components/pages/RenterDashboard';
+import About from './components/pages/About';
+import Contact from './components/pages/Contact';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Profile from './components/auth/Profile';
@@ -16,6 +19,7 @@ import MyBookings from './components/bookings/MyBookings';
 import { AuthProvider } from './context/AuthContext';
 import { PropertyProvider } from './context/PropertyContext';
 import PrivateRoute from './components/auth/PrivateRoute';
+import ConditionalRoute from './components/auth/ConditionalRoute';
 import './App.css';
 
 function App() {
@@ -27,11 +31,22 @@ function App() {
             <Navbar />
             <main className="flex-1">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={
+                  <ConditionalRoute>
+                    <Home />
+                  </ConditionalRoute>
+                } />
+                <Route path="/renter-dashboard" element={
+                  <PrivateRoute>
+                    <RenterDashboard />
+                  </PrivateRoute>
+                } />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/properties" element={<PropertyList />} />
                 <Route path="/properties/:id" element={<PropertyDetail />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
                 
                 {/* Protected Routes */}
                 <Route path="/profile" element={

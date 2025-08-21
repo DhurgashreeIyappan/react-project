@@ -3,12 +3,12 @@ import { useLocation, Link } from 'react-router-dom';
 import { useProperty } from '../../context/PropertyContext';
 import { useAuth } from '../../context/AuthContext';
 import PropertyCard from './PropertyCard';
-import { FaSearch, FaFilter, FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaStar, FaHeart, FaTimes, FaPlus, FaUpload } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaTimes, FaPlus, FaUpload } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PropertyList = () => {
   const location = useLocation();
-  const { user, isAuthenticated, isOwner, isRenter } = useAuth();
+  const { isAuthenticated, isOwner, isRenter } = useAuth();
   const { 
     properties,
     filteredProperties, 
@@ -50,7 +50,7 @@ const PropertyList = () => {
     if (location.state?.location) {
       setFilters(prev => ({ ...prev, location: location.state.location }));
     }
-  }, [location.state]);
+  }, [location.state, searchProperties, setFilters]);
 
   // Debug: Log properties and authentication state
   useEffect(() => {
@@ -62,7 +62,7 @@ const PropertyList = () => {
       filteredPropertiesCount: filteredProperties?.length || 0,
       loading
     });
-  }, [isAuthenticated, properties, filteredProperties, loading]);
+  }, [isAuthenticated, properties, filteredProperties, loading, isOwner, isRenter]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -140,7 +140,8 @@ const PropertyList = () => {
   });
 
   const propertyTypes = ['apartment', 'villa', 'studio', 'house', 'condo'];
-  const furnishedOptions = ['furnished', 'unfurnished', 'partially-furnished'];
+  // removed unused furnishedOptions
+  const hasActiveFilters = Object.values(filters).some((value) => value !== '');
 
   return (
          <div className="min-h-screen bg-surfaceAlt py-8">
@@ -459,9 +460,8 @@ const PropertyList = () => {
                        className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                      >
                       <option value="">Any</option>
-                      {furnishedOptions.map(option => (
-                        <option key={option} value={option}>{option.charAt(0).toUpperCase() + option.slice(1)}</option>
-                      ))}
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
                     </select>
                   </div>
 
@@ -487,6 +487,33 @@ const PropertyList = () => {
                        value={filters.availabilityDate}
                        onChange={(e) => handleFilterChange('availabilityDate', e.target.value)}
                        className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                     />
+                  </div>
+
+                  {/* Bedrooms (min) */}
+                  <div>
+                                         <label className="block text-sm font-medium text-text-primary mb-2">Min Bedrooms</label>
+                                         <input
+                       type="number"
+                       placeholder="0"
+                       value={filters.bedroomsMin}
+                       min="0"
+                       onChange={(e) => handleFilterChange('bedroomsMin', e.target.value)}
+                       className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                     />
+                  </div>
+
+                  {/* Bathrooms (min) */}
+                  <div>
+                                         <label className="block text-sm font-medium text-text-primary mb-2">Min Bathrooms</label>
+                                         <input
+                       type="number"
+                       placeholder="0"
+                       step="0.5"
+                       value={filters.bathroomsMin}
+                       min="0"
+                       onChange={(e) => handleFilterChange('bathroomsMin', e.target.value)}
+                       className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus-border-transparent"
                      />
                   </div>
                 </div>
@@ -518,11 +545,11 @@ const PropertyList = () => {
         ) : (
           <>
             {/* Search Results Section */}
-            {searchQuery.trim() && (
+            {(searchQuery.trim() || hasActiveFilters) && (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-text-primary">
-                    Search Results for "{searchQuery}"
+                    {searchQuery.trim() ? `Search Results for "${searchQuery}"` : 'Filtered Results'}
                   </h2>
                   <button
                     onClick={() => {

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import client, { setAuthToken } from '../api/client';
 import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   // Configure axios defaults
   if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setAuthToken(token);
   }
 
   useEffect(() => {
@@ -45,27 +45,13 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      // Mock login - accept any email/password combination
-      // In a real app, this would validate against the backend
-      const mockUser = {
-        _id: 'user123',
-        name: 'Demo User',
-        email: email,
-        phone: '+1 (555) 123-4567',
-        role: 'owner', // Default to owner for demo
-        bio: 'Demo user for testing purposes',
-        profilePicture: null,
-        createdAt: new Date().toISOString()
-      };
-      
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      
-      localStorage.setItem('token', mockToken);
-      setToken(mockToken);
-      setUser(mockUser);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`;
-      
-      toast.success('Login successful! (Demo Mode)');
+      const res = await client.post('/auth/login', { email, password });
+      const { token: jwt, user: profile } = res.data;
+      localStorage.setItem('token', jwt);
+      setToken(jwt);
+      setAuthToken(jwt);
+      setUser(profile);
+      toast.success('Login successful');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
@@ -76,26 +62,13 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      // Mock registration - create a new user
-      const mockUser = {
-        _id: 'user' + Date.now(),
-        name: userData.name,
-        email: userData.email,
-        phone: userData.phone,
-        role: userData.role,
-        bio: userData.bio || '',
-        profilePicture: null,
-        createdAt: new Date().toISOString()
-      };
-      
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      
-      localStorage.setItem('token', mockToken);
-      setToken(mockToken);
-      setUser(mockUser);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`;
-      
-      toast.success('Registration successful! (Demo Mode)');
+      const res = await client.post('/auth/register', userData);
+      const { token: jwt, user: profile } = res.data;
+      localStorage.setItem('token', jwt);
+      setToken(jwt);
+      setAuthToken(jwt);
+      setUser(profile);
+      toast.success('Registration successful');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed';
@@ -108,16 +81,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
-    delete axios.defaults.headers.common['Authorization'];
+    setAuthToken(null);
     toast.success('Logged out successfully');
   };
 
   const updateProfile = async (profileData) => {
     try {
-      // Mock profile update
-      const updatedUser = { ...user, ...profileData };
-      setUser(updatedUser);
-      toast.success('Profile updated successfully! (Demo Mode)');
+      const res = await client.put('/users/me', profileData);
+      setUser(res.data.user);
+      toast.success('Profile updated successfully');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Profile update failed';

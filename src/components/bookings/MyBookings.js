@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { FaCalendar, FaMapMarkerAlt, FaDollarSign, FaClock, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import axios from 'axios';
 import toast from 'react-hot-toast';
+import client from '../../api/client';
 
 // Helper functions moved outside component to be accessible
 const getStatusColor = (status) => {
@@ -40,66 +40,7 @@ const getStatusIcon = (status) => {
   }
 };
 
-// Mock data for bookings
-const mockBookings = [
-  {
-    _id: 'booking1',
-    property: {
-      _id: 'prop1',
-      title: 'Modern Downtown Apartment',
-      location: 'Downtown, City Center',
-      price: 2500,
-      images: ['https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop']
-    },
-    user: {
-      name: 'John Doe',
-      email: 'john@example.com'
-    },
-    startDate: '2024-02-01',
-    endDate: '2024-03-01',
-    status: 'pending',
-    message: 'I would like to rent this apartment for the month of February.',
-    createdAt: '2024-01-15'
-  },
-  {
-    _id: 'booking2',
-    property: {
-      _id: 'prop2',
-      title: 'Cozy Studio Near University',
-      location: 'University District',
-      price: 1200,
-      images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop']
-    },
-    user: {
-      name: 'Sarah Smith',
-      email: 'sarah@example.com'
-    },
-    startDate: '2024-01-20',
-    endDate: '2024-02-20',
-    status: 'accepted',
-    message: 'Perfect location for my studies!',
-    createdAt: '2024-01-10'
-  },
-  {
-    _id: 'booking3',
-    property: {
-      _id: 'prop3',
-      title: 'Luxury Villa with Pool',
-      location: 'Hillside, Suburbs',
-      price: 4500,
-      images: ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop']
-    },
-    user: {
-      name: 'Mike Johnson',
-      email: 'mike@example.com'
-    },
-    startDate: '2024-02-15',
-    endDate: '2024-03-15',
-    status: 'completed',
-    message: 'Amazing property, had a great stay!',
-    createdAt: '2024-01-05'
-  }
-];
+// Removed mockBookings; real data comes from backend
 
 const MyBookings = () => {
   const { isOwner } = useAuth();
@@ -109,13 +50,12 @@ const MyBookings = () => {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, []); // fetchBookings uses stable client and setState
 
   const fetchBookings = async () => {
     try {
-      // Use mock data instead of API call
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-      setBookings(mockBookings);
+      const res = await client.get('/bookings/me');
+      setBookings(res.data.bookings || []);
     } catch (error) {
       console.error('Error fetching bookings:', error);
       toast.error('Failed to fetch bookings');
@@ -126,19 +66,9 @@ const MyBookings = () => {
 
   const handleStatusUpdate = async (bookingId, status) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      // Update local state
-      setBookings(prev => 
-        prev.map(booking => 
-          booking._id === bookingId 
-            ? { ...booking, status } 
-            : booking
-        )
-      );
-      
-      toast.success(`Booking ${status === 'accepted' ? 'accepted' : 'rejected'} successfully (Demo Mode)`);
+      await client.put(`/bookings/${bookingId}/status`, { status });
+      setBookings(prev => prev.map(b => b._id === bookingId ? { ...b, status } : b));
+      toast.success('Booking updated');
     } catch (error) {
       console.error('Error updating booking status:', error);
       toast.error('Failed to update booking status');

@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 const AddProperty = () => {
   const navigate = useNavigate();
   const { addProperty } = useProperty();
-  const { isOwner } = useAuth();
+  const { isOwner, isRenter } = useAuth();
   
   const [formData, setFormData] = useState({
     title: '',
@@ -30,8 +30,8 @@ const AddProperty = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Redirect if not owner
-  if (!isOwner()) {
+  // Redirect if not owner or renter
+  if (!isOwner() && !isRenter()) {
     navigate('/');
     return null;
   }

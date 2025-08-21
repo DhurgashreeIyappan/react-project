@@ -135,27 +135,25 @@ const PropertyCard = ({ property, showLink = true }) => {
             {property.type || 'Property'}
           </span>
         </div>
+
+        {showLink && (
+          <div className="mt-4">
+            <Link
+              to={`/properties/${property._id}`}
+              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300"
+            >
+              View Details
+            </Link>
+          </div>
+        )}
       </div>
     </>
   );
 
-  if (showLink) {
-    return (
-      <motion.div
-        whileHover={{ y: -5 }}
-        className="bg-surface rounded-2xl shadow-lg border border-border overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300"
-      >
-        <Link to={`/properties/${property._id}`}>
-          {cardContent}
-        </Link>
-      </motion.div>
-    );
-  }
-
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="bg-surface rounded-2xl shadow-lg border border-border overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300"
+      className="bg-surface rounded-2xl shadow-lg border border-border overflow-hidden group hover:shadow-xl transition-all duration-300"
     >
       {cardContent}
     </motion.div>
