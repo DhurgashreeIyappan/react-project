@@ -1,19 +1,163 @@
-import Property from '../models/Property.js';
 import { validationResult } from 'express-validator';
+import Property from '../models/Property.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 export const createProperty = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-  const data = { ...req.body, owner: req.user.id };
-  const property = await Property.create(data);
-  res.status(201).json({ property });
+  if (!errors.isEmpty()) {
+    console.log('Validation errors:', errors.array());
+    return res.status(400).json({
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+
+  try {
+    console.log('Request body:', req.body);
+    console.log('Request files:', req.files);
+
+    const data = { ...req.body, owner: req.user.id };
+    if (data.propertyType && !data.type) {
+      data.type = data.propertyType;
+    }
+    if (data.type && !data.propertyType) {
+      data.propertyType = data.type;
+    }
+
+    // Convert data types for proper MongoDB storage
+    if (data.price) data.price = Number(data.price);
+    if (data.bedrooms) data.bedrooms = Number(data.bedrooms);
+    if (data.bathrooms) data.bathrooms = Number(data.bathrooms);
+    if (data.size) data.size = Number(data.size);
+
+    // Convert furnished string to boolean
+    if (data.furnished !== undefined) {
+      if (typeof data.furnished === 'string') {
+        data.furnished = data.furnished === 'furnished';
+      } else {
+        data.furnished = Boolean(data.furnished);
+      }
+    }
+
+    // Convert petFriendly to boolean
+    if (data.petFriendly !== undefined) {
+      data.petFriendly = Boolean(data.petFriendly);
+    }
+
+    // Handle uploaded images - save to uploads folder
+    if (req.files && req.files.length > 0) {
+      console.log('Processing images...');
+
+      const imagePromises = req.files.map(async (file) => {
+        const filename = `${Date.now()}-${file.originalname}`;
+        const filepath = path.join(uploadsDir, filename);
+
+        // Write file to uploads folder
+        fs.writeFileSync(filepath, file.buffer);
+
+        return {
+          filename: filename,
+          contentType: file.mimetype,
+          uploadDate: new Date()
+        };
+      });
+
+      data.images = await Promise.all(imagePromises);
+      console.log('Images processed:', data.images);
+    } else {
+      console.log('No images uploaded');
+      data.images = [];
+    }
+
+    console.log('Final data to save:', data);
+    const property = await Property.create(data);
+    console.log('Property created successfully:', property._id);
+    res.status(201).json({ property });
+  } catch (error) {
+    console.error('Error creating property:', error);
+    res.status(500).json({
+      message: 'Error creating property',
+      error: error.message
+    });
+  }
 };
 
 export const updateProperty = async (req, res) => {
   const { id } = req.params;
-  const property = await Property.findOneAndUpdate({ _id: id, owner: req.user.id }, req.body, { new: true });
-  if (!property) return res.status(404).json({ message: 'Property not found' });
-  res.json({ property });
+
+  try {
+    // Handle field name mapping between frontend and backend
+    const updateData = { ...req.body };
+    if (updateData.propertyType && !updateData.type) {
+      updateData.type = updateData.propertyType;
+    }
+    // Ensure propertyType is also set for frontend compatibility
+    if (updateData.type && !updateData.propertyType) {
+      updateData.propertyType = updateData.type;
+    }
+
+    // Convert data types for proper MongoDB storage
+    if (updateData.price) updateData.price = Number(updateData.price);
+    if (updateData.bedrooms) updateData.bedrooms = Number(updateData.bedrooms);
+    if (updateData.bathrooms) updateData.bathrooms = Number(updateData.bathrooms);
+    if (updateData.size) updateData.size = Number(updateData.size);
+
+    // Convert furnished string to boolean
+    if (updateData.furnished !== undefined) {
+      if (typeof updateData.furnished === 'string') {
+        updateData.furnished = updateData.furnished === 'furnished';
+      } else {
+        updateData.furnished = Boolean(updateData.furnished);
+      }
+    }
+
+    // Convert petFriendly to boolean
+    if (updateData.petFriendly !== undefined) {
+      updateData.petFriendly = Boolean(updateData.petFriendly);
+    }
+
+    // Handle uploaded images - save to uploads folder
+    if (req.files && req.files.length > 0) {
+      const imagePromises = req.files.map(async (file) => {
+        const filename = `${Date.now()}-${file.originalname}`;
+        const filepath = path.join(uploadsDir, filename);
+        
+        // Write file to uploads folder
+        fs.writeFileSync(filepath, file.buffer);
+        
+        return {
+          filename: filename,
+          contentType: file.mimetype,
+          uploadDate: new Date()
+        };
+      });
+
+      updateData.images = await Promise.all(imagePromises);
+    }
+
+    const property = await Property.findOneAndUpdate(
+      { _id: id, owner: req.user.id },
+      updateData,
+      { new: true }
+    );
+
+    if (!property) return res.status(404).json({ message: 'Property not found' });
+    res.json({ property });
+  } catch (error) {
+    console.error('Error updating property:', error);
+    res.status(500).json({ message: 'Error updating property' });
+  }
 };
 
 export const deleteProperty = async (req, res) => {
@@ -24,57 +168,117 @@ export const deleteProperty = async (req, res) => {
 };
 
 export const myProperties = async (req, res) => {
-  const items = await Property.find({ owner: req.user.id }).sort({ createdAt: -1 });
-  res.json({ properties: items });
+  try {
+    const items = await Property.find({ owner: req.user.id }).sort({ createdAt: -1 });
+
+    // Ensure propertyType field is populated for frontend compatibility
+    const properties = items.map(item => {
+      const property = item.toObject();
+      if (property.type && !property.propertyType) {
+        property.propertyType = property.type;
+      }
+      return property;
+    });
+
+    res.json({ properties });
+  } catch (error) {
+    console.error('Error fetching my properties:', error);
+    res.status(500).json({ message: 'Error fetching properties' });
+  }
 };
 
 export const getProperty = async (req, res) => {
   const { id } = req.params;
-  const property = await Property.findById(id);
+  const property = await Property.findById(id).populate('owner', 'name email');
   if (!property) return res.status(404).json({ message: 'Not found' });
-  res.json({ property });
+
+  // Ensure propertyType field is populated for frontend compatibility
+  const propertyData = property.toObject();
+  if (propertyData.type && !propertyData.propertyType) {
+    propertyData.propertyType = propertyData.type;
+  }
+
+  res.json({ property: propertyData });
 };
 
 export const listProperties = async (req, res) => {
-  const {
-    q,
-    location,
-    priceMin,
-    priceMax,
-    propertyType,
-    bedroomsMin,
-    bathroomsMin,
-    furnished,
-    petFriendly,
-    page = 1,
-    limit = 12
-  } = req.query;
+  try {
+    const {
+      q,
+      location,
+      priceMin,
+      priceMax,
+      propertyType,
+      type,
+      bedroomsMin,
+      bathroomsMin,
+      furnished,
+      petFriendly,
+      page = 1,
+      limit = 12
+    } = req.query;
 
-  const filter = {};
-  if (q) {
-    filter.$or = [
-      { title: { $regex: q, $options: 'i' } },
-      { description: { $regex: q, $options: 'i' } },
-      { location: { $regex: q, $options: 'i' } }
-    ];
+    const filter = { isAvailable: true }; // Only show available properties
+
+    if (q) {
+      filter.$or = [
+        { title: { $regex: q, $options: 'i' } },
+        { description: { $regex: q, $options: 'i' } },
+        { location: { $regex: q, $options: 'i' } }
+      ];
+    }
+    if (location) filter.location = { $regex: location, $options: 'i' };
+    if (priceMin) filter.price = { ...(filter.price || {}), $gte: Number(priceMin) };
+    if (priceMax) filter.price = { ...(filter.price || {}), $lte: Number(priceMax) };
+    if (propertyType || type) filter.type = propertyType || type;
+    if (bedroomsMin) filter.bedrooms = { $gte: Number(bedroomsMin) };
+    if (bathroomsMin) filter.bathrooms = { $gte: Number(bathroomsMin) };
+    if (furnished === 'true') filter.furnished = true;
+    if (furnished === 'false') filter.furnished = false;
+    if (petFriendly === 'true') filter.petFriendly = true;
+    if (petFriendly === 'false') filter.petFriendly = false;
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const [items, total] = await Promise.all([
+      Property.find(filter).populate('owner', 'name').sort({ createdAt: -1 }).skip(skip).limit(Number(limit)),
+      Property.countDocuments(filter)
+    ]);
+
+    // Ensure propertyType field is populated for frontend compatibility
+    const properties = items.map(item => {
+      const property = item.toObject();
+      if (property.type && !property.propertyType) {
+        property.propertyType = property.type;
+      }
+      return property;
+    });
+
+    res.json({ properties, total, page: Number(page), totalPages: Math.ceil(total / Number(limit)) });
+  } catch (error) {
+    console.error('Error listing properties:', error);
+    res.status(500).json({ message: 'Error listing properties' });
   }
-  if (location) filter.location = { $regex: location, $options: 'i' };
-  if (priceMin) filter.price = { ...(filter.price || {}), $gte: Number(priceMin) };
-  if (priceMax) filter.price = { ...(filter.price || {}), $lte: Number(priceMax) };
-  if (propertyType) filter.type = propertyType;
-  if (bedroomsMin) filter.bedrooms = { $gte: Number(bedroomsMin) };
-  if (bathroomsMin) filter.bathrooms = { $gte: Number(bathroomsMin) };
-  if (furnished === 'true') filter.furnished = true;
-  if (furnished === 'false') filter.furnished = false;
-  if (petFriendly === 'true') filter.petFriendly = true;
-  if (petFriendly === 'false') filter.petFriendly = false;
+};
 
-  const skip = (Number(page) - 1) * Number(limit);
-  const [items, total] = await Promise.all([
-    Property.find(filter).sort({ createdAt: -1 }).skip(skip).limit(Number(limit)),
-    Property.countDocuments(filter)
-  ]);
-  res.json({ properties: items, total, page: Number(page), totalPages: Math.ceil(total / Number(limit)) });
+// Get all properties for owners (including unavailable ones)
+export const getAllPropertiesForOwner = async (req, res) => {
+  try {
+    const items = await Property.find({ owner: req.user.id }).sort({ createdAt: -1 });
+
+    // Ensure propertyType field is populated for frontend compatibility
+    const properties = items.map(item => {
+      const property = item.toObject();
+      if (property.type && !property.propertyType) {
+        property.propertyType = property.type;
+      }
+      return property;
+    });
+
+    res.json({ properties });
+  } catch (error) {
+    console.error('Error fetching all properties:', error);
+    res.status(500).json({ message: 'Error fetching properties' });
+  }
 };
 
 
