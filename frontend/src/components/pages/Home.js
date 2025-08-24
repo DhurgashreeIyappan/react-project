@@ -177,7 +177,7 @@ const Home = () => {
               viewport={{ once: true }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             >
-              {properties.slice(0, 6).map((property) => (
+              {properties.slice(0, 3).map((property) => (
                 <motion.div
                   key={property._id}
                   variants={itemVariants}

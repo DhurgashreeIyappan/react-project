@@ -6,7 +6,6 @@ import Footer from './components/layout/Footer';
 import Home from './components/pages/Home';
 import OwnerDashboard from './components/pages/OwnerDashboard';
 import RenterDashboard from './components/pages/RenterDashboard';
-import About from './components/pages/About';
 import Contact from './components/pages/Contact';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
@@ -49,7 +48,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/properties" element={<PropertyList />} />
               <Route path="/properties/:id" element={<PropertyDetail />} />
-              <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               
               {/* Protected Routes */}

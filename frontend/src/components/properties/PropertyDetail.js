@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaStar, FaHeart, FaCalendar, FaUser, FaEdit, FaChevronLeft, FaChevronRight, FaTrash } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaStar, FaHeart, FaCalendar, FaUser, FaEdit, FaChevronLeft, FaChevronRight, FaTrash, FaTimes } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
 import toast from 'react-hot-toast';
@@ -13,6 +13,13 @@ const PropertyDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    startDate: '',
+    endDate: '',
+    message: ''
+  });
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   // Check if current user owns this property
   const isPropertyOwner = property && user && isOwner() && property.owner?._id === user.id;
@@ -63,6 +70,36 @@ const PropertyDetail = () => {
         toast.error('Failed to delete property');
       }
     }
+  };
+
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    setBookingLoading(true);
+    
+    try {
+      await client.post('/bookings', {
+        property: property._id,
+        startDate: bookingData.startDate,
+        endDate: bookingData.endDate,
+        message: bookingData.message
+      });
+      
+      toast.success('Booking request submitted successfully!');
+      setShowBookingModal(false);
+      setBookingData({ startDate: '', endDate: '', message: '' });
+    } catch (error) {
+      console.error('Error submitting booking:', error);
+      toast.error('Failed to submit booking request');
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setBookingData({
+      ...bookingData,
+      [e.target.name]: e.target.value
+    });
   };
 
   if (loading) {
@@ -318,7 +355,10 @@ const PropertyDetail = () => {
 
               {/* Booking Button - Only show for renters who don't own this property */}
               {isRenter() && !isPropertyOwner && property.isAvailable && (
-                <button className="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 mt-6">
+                <button 
+                  onClick={() => setShowBookingModal(true)}
+                  className="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 mt-6"
+                >
                   Book This Property
                 </button>
               )}
@@ -346,6 +386,93 @@ const PropertyDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      {showBookingModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-900">Book This Property</h3>
+                <button
+                  onClick={() => setShowBookingModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                >
+                  <FaTimes className="text-xl" />
+                </button>
+              </div>
+
+              <form onSubmit={handleBookingSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={bookingData.startDate}
+                    onChange={handleInputChange}
+                    required
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={bookingData.endDate}
+                    onChange={handleInputChange}
+                    required
+                    min={bookingData.startDate || new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message (Optional)
+                  </label>
+                  <textarea
+                    name="message"
+                    value={bookingData.message}
+                    onChange={handleInputChange}
+                    rows="3"
+                    placeholder="Any special requests or additional information..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowBookingModal(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={bookingLoading}
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {bookingLoading ? 'Submitting...' : 'Submit Booking'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

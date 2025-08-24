@@ -25,14 +25,12 @@ const Navbar = () => {
       return [
         { name: 'Dashboard', path: '/renter-dashboard', icon: <FaHome /> },
         { name: 'Browse Properties', path: '/properties', icon: <FaSearch /> },
-        { name: 'About', path: '/about' },
         { name: 'Contact', path: '/contact' },
       ];
     }
     return [
       { name: 'Home', path: '/', icon: <FaHome /> },
       { name: 'Properties', path: '/properties', icon: <FaSearch /> },
-      { name: 'About', path: '/about' },
       { name: 'Contact', path: '/contact' },
     ];
   };
