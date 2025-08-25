@@ -83,7 +83,7 @@ const OwnerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background bg-app-pattern">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -184,7 +184,7 @@ const OwnerDashboard = () => {
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
               to="/add-property"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <FaPlus className="mr-2" />
               Add New Property
@@ -207,7 +207,7 @@ const OwnerDashboard = () => {
               </p>
               <Link
                 to="/add-property"
-                className="inline-flex items-center px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-dark transition-colors duration-200"
+                className="inline-flex items-center px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200"
               >
                 <FaPlus className="mr-2" />
                 Add Your First Property
@@ -264,7 +264,7 @@ const OwnerDashboard = () => {
                           {property.bathrooms || 0}
                         </span>
                       </div>
-                      <span className="text-lg font-bold text-primary">
+                      <span className="text-lg font-bold text-primary-500">
                         ₹{property.price?.toLocaleString()}
                       </span>
                     </div>
@@ -304,7 +304,7 @@ const OwnerDashboard = () => {
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-              <FaCalendar className="mr-2 text-primary" />
+                             <FaCalendar className="mr-2 text-primary-500" />
               Property Bookings ({bookings.length})
             </h2>
           </div>
@@ -353,7 +353,7 @@ const OwnerDashboard = () => {
                               {booking.property?.title || 'Property Title'}
                             </h4>
                             <div className="flex items-center text-gray-600 mb-2">
-                              <FaMapMarkerAlt className="text-primary mr-2" />
+                              <FaMapMarkerAlt className="text-primary-500 mr-2" />
                               <span>{booking.property?.location || 'Location'}</span>
                             </div>
                             <div className="flex items-center space-x-4 text-sm text-gray-500">

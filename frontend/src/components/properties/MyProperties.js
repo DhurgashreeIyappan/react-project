@@ -54,7 +54,7 @@ const MyProperties = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background bg-app-pattern py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -76,7 +76,7 @@ const MyProperties = () => {
         >
           <Link
             to="/add-property"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-500 text-white font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300"
           >
             <FaPlus className="mr-2" />
             Add New Property
@@ -96,7 +96,7 @@ const MyProperties = () => {
             <p className="text-gray-500 mb-6">Start earning by listing your first property</p>
             <Link
               to="/add-property"
-              className="inline-flex items-center px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary-dark transition-colors duration-200"
+              className="inline-flex items-center px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200"
             >
               <FaPlus className="mr-2" />
               List Your First Property
@@ -160,11 +160,11 @@ const PropertyCard = ({ property, onDelete, index, getImageUrl }) => {
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
+                         <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-500 transition-colors duration-300">
           {property.title}
         </h3>
         <p className="text-gray-600 mb-4 flex items-center">
-          <FaMapMarkerAlt className="text-primary mr-2" />
+                           <FaMapMarkerAlt className="text-primary-500 mr-2" />
           {property.location}
         </p>
         

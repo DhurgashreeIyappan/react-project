@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import client from '../../api/client';
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaCamera, FaSave, FaTimes, FaHome, FaUserTie } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -16,6 +17,37 @@ const Profile = () => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [stats, setStats] = useState({ propertiesListed: 0, bookingsMade: 0, bookingsReceived: 0, reviewsGiven: 0 });
+
+  const fetchStats = useCallback(async () => {
+    try {
+      // Parallel fetches depending on role
+      if (user.role === 'owner') {
+        const [propsRes, bookingsRes] = await Promise.all([
+          client.get('/properties/me/all'),
+          client.get('/bookings')
+        ]);
+        setStats({
+          propertiesListed: propsRes.data.properties?.length || 0,
+          bookingsReceived: bookingsRes.data.bookings?.length || 0,
+          bookingsMade: 0,
+          reviewsGiven: 0,
+        });
+      } else if (user.role === 'renter') {
+        const [bookingsRes] = await Promise.all([
+          client.get('/bookings/me')
+        ]);
+        setStats({
+          propertiesListed: 0,
+          bookingsMade: bookingsRes.data.bookings?.length || 0,
+          bookingsReceived: 0,
+          reviewsGiven: 0,
+        });
+      }
+    } catch (err) {
+      // Non-fatal
+    }
+  }, [user?.role]);
 
   useEffect(() => {
     if (user) {
@@ -26,8 +58,9 @@ const Profile = () => {
         bio: user.bio || '',
         profilePicture: user.profilePicture || null
       });
+      fetchStats();
     }
-  }, [user]);
+  }, [user, fetchStats]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,8 +114,11 @@ const Profile = () => {
 
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^[\+]?[1-9][\d]{0,15}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Please enter a valid phone number';
+    } else {
+      const digits = formData.phone.replace(/\s/g, '');
+      if (!/^\+?[1-9]\d{0,15}$/.test(digits)) {
+        newErrors.phone = 'Please enter a valid phone number';
+      }
     }
 
     setErrors(newErrors);
@@ -131,7 +167,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-background bg-app-pattern py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -154,7 +190,7 @@ const Profile = () => {
           >
             <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
               <div className="relative mb-6">
-                <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-to-br from-primary to-secondary">
+                <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600">
                   {formData.profilePicture ? (
                     <img
                       src={formData.profilePicture}
@@ -169,7 +205,7 @@ const Profile = () => {
                 </div>
                 
                 {isEditing && (
-                  <label className="absolute bottom-0 right-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-dark transition-colors duration-200">
+                  <label className="absolute bottom-0 right-0 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-indigo-700 transition-colors duration-200">
                     <FaCamera />
                     <input
                       type="file"
@@ -190,9 +226,9 @@ const Profile = () => {
               
               <div className="flex items-center justify-center space-x-2 mb-4">
                 {user.role === 'owner' ? (
-                  <FaHome className="text-primary" />
+                  <FaHome className="text-primary-500" />
                 ) : (
-                  <FaUserTie className="text-primary" />
+                                     <FaUserTie className="text-primary-500" />
                 )}
                 <span className="text-sm text-gray-500 capitalize">{user.role}</span>
               </div>
@@ -353,20 +389,37 @@ const Profile = () => {
             {/* Account Stats */}
             <div className="mt-8 bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Statistics</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gradient-to-br from-primary to-secondary rounded-lg text-white">
-                  <div className="text-2xl font-bold">0</div>
-                  <div className="text-sm opacity-90">Properties Listed</div>
+              {user.role === 'owner' ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-lg text-white">
+                    <div className="text-2xl font-bold">{stats.propertiesListed}</div>
+                    <div className="text-sm opacity-90">Properties Listed</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-lg text-white">
+                    <div className="text-2xl font-bold">{stats.bookingsReceived}</div>
+                    <div className="text-sm opacity-90">Bookings Received</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-accent-500 to-primary-600 rounded-lg text-white">
+                    <div className="text-2xl font-bold">{stats.reviewsGiven}</div>
+                    <div className="text-sm opacity-90">Reviews Given</div>
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-secondary to-accent rounded-lg text-white">
-                  <div className="text-2xl font-bold">0</div>
-                  <div className="text-sm opacity-90">Bookings Made</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-lg text-white">
+                    <div className="text-2xl font-bold">{stats.bookingsMade}</div>
+                    <div className="text-sm opacity-90">Properties Booked</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-lg text-white">
+                    <div className="text-2xl font-bold">{stats.reviewsGiven}</div>
+                    <div className="text-sm opacity-90">Reviews Given</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-accent-500 to-primary-600 rounded-lg text-white">
+                    <div className="text-2xl font-bold">{stats.propertiesListed}</div>
+                    <div className="text-sm opacity-90">Properties Listed</div>
+                  </div>
                 </div>
-                <div className="text-center p-4 bg-gradient-to-br from-accent to-primary rounded-lg text-white">
-                  <div className="text-2xl font-bold">0</div>
-                  <div className="text-sm opacity-90">Reviews Given</div>
-                </div>
-              </div>
+              )}
             </div>
           </motion.div>
         </div>

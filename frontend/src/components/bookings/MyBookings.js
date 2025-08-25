@@ -97,7 +97,7 @@ const MyBookings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-background bg-app-pattern py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -126,8 +126,8 @@ const MyBookings = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'bg-primary text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
+                    : 'bg-surface-alt text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 {tab.label}
@@ -216,7 +216,7 @@ const BookingCard = ({ booking, isOwner, onStatusUpdate, index, getStatusColor, 
                   {booking.property?.title || 'Property Title'}
                 </h3>
                 <div className="flex items-center text-gray-600 mb-2">
-                  <FaMapMarkerAlt className="text-primary mr-2" />
+                  <FaMapMarkerAlt className="text-primary-500 mr-2" />
                   <span>{booking.property?.location || 'Location'}</span>
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">

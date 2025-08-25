@@ -161,7 +161,7 @@ const PropertyList = () => {
   const hasActiveFilters = Object.values(filters).some((value) => value !== '') || searchQuery.trim();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background bg-app-pattern py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -181,7 +181,7 @@ const PropertyList = () => {
                   placeholder="Search properties..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </form>
             </div>
@@ -191,7 +191,7 @@ const PropertyList = () => {
               <select
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="newest">Newest First</option>
                 <option value="price-low">Price: Low to High</option>
@@ -203,7 +203,7 @@ const PropertyList = () => {
             {/* Filters Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:shadow-lg transition-all duration-300"
+              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-500 text-white rounded-lg hover:shadow-lg transition-all duration-300"
             >
               <FaFilter />
               <span>Filters</span>
@@ -330,7 +330,7 @@ const PropertyList = () => {
                 <div className="flex justify-between items-center mt-4">
                                      <button
                      onClick={clearFilters}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors duration-200"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-primary-500 transition-colors duration-200"
                    >
                      <FaTimes />
                      <span>Clear All Filters</span>
@@ -361,7 +361,7 @@ const PropertyList = () => {
                   </h2>
                   <button
                     onClick={clearFilters}
-                    className="text-primary hover:text-primary/80 transition-colors duration-200"
+                    className="text-primary-500 hover:text-primary-400 transition-colors duration-200"
                   >
                     Clear Search
                   </button>
@@ -458,7 +458,7 @@ const PropertyCard = ({ property }) => {
               {property.bathrooms || 0}
             </span>
           </div>
-          <span className="text-lg font-bold text-primary">
+                         <span className="text-lg font-bold text-primary-500">
             ₹{property.price?.toLocaleString()}
           </span>
         </div>
@@ -466,7 +466,7 @@ const PropertyCard = ({ property }) => {
         {/* Action Button */}
         <Link
           to={`/properties/${property._id}`}
-          className="w-full bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-dark transition-colors duration-200 flex items-center justify-center"
+          className="w-full bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center"
         >
           View Details
         </Link>

@@ -104,7 +104,7 @@ const PropertyDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background bg-app-pattern flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
@@ -112,7 +112,7 @@ const PropertyDetail = () => {
 
   if (!property) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background bg-app-pattern flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Property not found</h2>
           <p className="text-gray-600">The property you're looking for doesn't exist.</p>
@@ -122,7 +122,7 @@ const PropertyDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background bg-app-pattern">
       {/* Hero Image Section */}
       <div className="relative h-96 md:h-[500px] bg-gray-200">
         {property.images && property.images.length > 0 ? (
@@ -217,11 +217,11 @@ const PropertyDetail = () => {
               <div className="mb-6">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">{property.title}</h1>
                 <div className="flex items-center text-gray-600 mb-4">
-                  <FaMapMarkerAlt className="text-primary mr-2 text-xl" />
+                  <FaMapMarkerAlt className="text-primary-500 mr-2 text-xl" />
                   <span className="text-lg">{property.location}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="text-4xl font-bold text-primary">₹{property.price?.toLocaleString()}/month</div>
+                  <div className="text-4xl font-bold text-primary-500">₹{property.price?.toLocaleString()}/month</div>
                   <div className="flex items-center space-x-2">
                     <FaStar className="text-yellow-400 text-xl" />
                     <span className="text-gray-600 font-medium text-lg">
@@ -233,32 +233,32 @@ const PropertyDetail = () => {
 
               {/* Property Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="text-center p-4 bg-surface-alt rounded-xl">
+                  <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
                     <FaBed className="text-white text-2xl" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{property.bedrooms || 'N/A'}</div>
                   <div className="text-gray-600">Bedrooms</div>
                 </div>
                 
-                <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="text-center p-4 bg-surface-alt rounded-xl">
+                  <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
                     <FaBath className="text-white text-2xl" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{property.bathrooms || 'N/A'}</div>
                   <div className="text-gray-600">Bathrooms</div>
                 </div>
                 
-                <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="text-center p-4 bg-surface-alt rounded-xl">
+                  <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to紫urple-600 rounded-full flex items-center justify-center mx-auto mb-3">
                     <FaRulerCombined className="text-white text-2xl" />
                   </div>
                   <div className="text-2xl font-bold text-gray-900">{property.size || 'N/A'}</div>
                   <div className="text-gray-600">sq ft</div>
                 </div>
                 
-                <div className="text-center p-4 bg-gray-50 rounded-xl">
-                  <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="text-center p-4 bg-surface-alt rounded-xl">
+                  <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
                     <FaCalendar className="text-white text-2xl" />
                   </div>
                   <div className="text-lg font-bold text-gray-900">

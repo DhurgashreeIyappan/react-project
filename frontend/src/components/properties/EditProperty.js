@@ -274,7 +274,7 @@ const EditProperty = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background bg-app-pattern py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -298,7 +298,7 @@ const EditProperty = () => {
             {/* Basic Information */}
             <div className="md:col-span-2">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <FaHome className="mr-2 text-primary" />
+                <FaHome className="mr-2 text-primary-500" />
                 Basic Information
               </h3>
             </div>
@@ -394,7 +394,7 @@ const EditProperty = () => {
             {/* Property Details */}
             <div className="md:col-span-2">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <FaRulerCombined className="mr-2 text-primary" />
+                <FaRulerCombined className="mr-2 text-primary-500" />
                 Property Details
               </h3>
             </div>
@@ -541,7 +541,7 @@ const EditProperty = () => {
                   name="petFriendly"
                   checked={formData.petFriendly}
                   onChange={handleChange}
-                  className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                     className="w-4 h-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
                 />
                 <span className="text-sm font-medium text-gray-700">Pet Friendly</span>
               </label>
@@ -559,7 +559,7 @@ const EditProperty = () => {
                       type="checkbox"
                       checked={formData.amenities.includes(amenity)}
                       onChange={() => handleAmenityChange(amenity)}
-                      className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                      className="w-4 h-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm text-gray-700">{amenity}</span>
                   </label>
@@ -669,7 +669,7 @@ const EditProperty = () => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={saving}
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <div className="flex items-center space-x-2">

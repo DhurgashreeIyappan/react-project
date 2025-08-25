@@ -88,7 +88,7 @@ const RenterDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background bg-app-pattern">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -165,7 +165,7 @@ const RenterDashboard = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleSearch}
-            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition-colors duration-200 flex items-center justify-center mx-auto"
+            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center mx-auto"
           >
             <FaSearch className="mr-2" />
             Search Properties
@@ -176,7 +176,7 @@ const RenterDashboard = () => {
         <div className="bg-white rounded-lg shadow mb-8">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-              <FaBookmark className="mr-2 text-primary" />
+                             <FaBookmark className="mr-2 text-primary-500" />
               My Bookings
             </h2>
           </div>
@@ -211,14 +211,14 @@ const RenterDashboard = () => {
                       </div>
                       <div className="flex items-center">
                         <FaDollarSign className="mr-2" />
-                        <span className="text-lg font-bold text-primary">
-                          ₹{booking.property?.price?.toLocaleString()}
-                        </span>
+                                       <span className="text-lg font-bold text-primary-500">
+                 ₹{booking.property?.price?.toLocaleString()}
+               </span>
                       </div>
                     </div>
                     <Link
                       to={`/properties/${booking.property?._id}`}
-                      className="text-primary hover:text-primary-dark text-sm font-medium"
+                      className="text-primary-500 hover:text-primary-600 text-sm font-medium"
                     >
                       View Property →
                     </Link>
@@ -233,7 +233,7 @@ const RenterDashboard = () => {
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-              <FaSearch className="mr-2 text-primary" />
+                             <FaSearch className="mr-2 text-primary-500" />
               Available Properties ({properties.length})
             </h2>
           </div>
@@ -293,15 +293,15 @@ const RenterDashboard = () => {
                           {property.bathrooms || 0}
                         </span>
                       </div>
-                      <span className="text-lg font-bold text-primary">
-                        ₹{property.price?.toLocaleString()}
-                      </span>
+                                       <span className="text-lg font-bold text-primary-500">
+                   ₹{property.price?.toLocaleString()}
+                 </span>
                     </div>
 
                     {/* Action Button */}
                     <Link
                       to={`/properties/${property._id}`}
-                      className="w-full bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-dark transition-colors duration-200 flex items-center justify-center"
+                      className="w-full bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center"
                     >
                       <FaEye className="mr-2" />
                       View Details

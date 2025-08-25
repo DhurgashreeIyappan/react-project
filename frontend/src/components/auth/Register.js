@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaHome, FaUserTie } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaHome, FaUserTie, FaPhone, FaArrowRight } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -51,7 +50,7 @@ const Register = () => {
 
     if (!formData.phone) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^[\+]?[1-9][\d]{0,15}$/.test(formData.phone.replace(/\s/g, ''))) {
+    } else if (!/^[+]?[1-9]\d{0,15}$/.test(formData.phone.replace(/\s/g, ''))) {
       newErrors.phone = 'Please enter a valid phone number';
     }
 
@@ -96,8 +95,8 @@ const Register = () => {
   };
 
   const roleOptions = [
-    { value: 'renter', label: 'Renter', icon: <FaUserTie />, description: 'I want to find and book properties' },
-    { value: 'owner', label: 'Property Owner', icon: <FaHome />, description: 'I want to list and manage properties' },
+    { value: 'renter', label: 'Renter', icon: <FaUserTie />, description: 'I want to find and book properties', color: 'from-primary-500 to-primary-600' },
+    { value: 'owner', label: 'Property Owner', icon: <FaHome />, description: 'I want to list and manage properties', color: 'from-secondary-500 to-secondary-600' },
   ];
 
   return (
@@ -114,15 +113,15 @@ const Register = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto h-20 w-20 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center"
+            className="mx-auto h-24 w-24 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-glow"
           >
-            <FaUser className="text-white text-3xl" />
+            <FaUser className="text-white text-4xl" />
           </motion.div>
           <motion.h2
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-6 text-3xl font-extrabold text-gray-900"
+            className="mt-8 text-4xl font-bold text-text-primary"
           >
             Create your account
           </motion.h2>
@@ -130,9 +129,9 @@ const Register = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-2 text-sm text-gray-600"
+            className="mt-3 text-lg text-text-secondary"
           >
-            Join RentEase and start your rental journey
+            Join RentNest and start your rental journey
           </motion.p>
         </div>
 
@@ -144,15 +143,15 @@ const Register = () => {
           className="mt-8 space-y-6"
           onSubmit={handleSubmit}
         >
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="form-label">
                 Full Name
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaUser className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaUser className="h-5 w-5 text-text-muted" />
                 </div>
                 <input
                   id="name"
@@ -162,7 +161,7 @@ const Register = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className={`input-field pl-10 ${errors.name ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`form-input pl-12 ${errors.name ? 'border-error focus:ring-error' : ''}`}
                   placeholder="Enter your full name"
                 />
               </div>
@@ -170,7 +169,7 @@ const Register = () => {
                 <motion.p
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="mt-1 text-sm text-red-600"
+                  className="form-error"
                 >
                   {errors.name}
                 </motion.p>
@@ -179,12 +178,12 @@ const Register = () => {
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="form-label">
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaEnvelope className="h-5 w-5 text-text-muted" />
                 </div>
                 <input
                   id="email"
@@ -194,15 +193,15 @@ const Register = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className={`input-field pl-10 ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
-                  placeholder="Enter your email"
+                  className={`form-input pl-12 ${errors.email ? 'border-error focus:ring-error' : ''}`}
+                  placeholder="Enter your email address"
                 />
               </div>
               {errors.email && (
                 <motion.p
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="mt-1 text-sm text-red-600"
+                  className="form-error"
                 >
                   {errors.email}
                 </motion.p>
@@ -211,25 +210,30 @@ const Register = () => {
 
             {/* Phone Field */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="phone" className="form-label">
                 Phone Number
               </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                className={`input-field ${errors.phone ? 'border-red-500 focus:ring-red-500' : ''}`}
-                placeholder="Enter your phone number"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaPhone className="h-5 w-5 text-text-muted" />
+                </div>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className={`form-input pl-12 ${errors.phone ? 'border-error focus:ring-error' : ''}`}
+                  placeholder="Enter your phone number"
+                />
+              </div>
               {errors.phone && (
                 <motion.p
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="mt-1 text-sm text-red-600"
+                  className="form-error"
                 >
                   {errors.phone}
                 </motion.p>
@@ -238,17 +242,17 @@ const Register = () => {
 
             {/* Role Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="form-label">
                 I am a...
               </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {roleOptions.map((option) => (
                   <motion.div
                     key={option.value}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <label className="relative flex cursor-pointer rounded-lg border-2 p-4 transition-all duration-200 hover:border-primary">
+                    <label className="relative flex cursor-pointer rounded-2xl border-2 p-6 transition-all duration-200 hover:border-primary-500 hover:shadow-medium">
                       <input
                         type="radio"
                         name="role"
@@ -257,26 +261,26 @@ const Register = () => {
                         onChange={handleChange}
                         className="sr-only"
                       />
-                      <div className={`flex items-center space-x-3 w-full ${
+                      <div className={`flex items-center space-x-4 w-full ${
                         formData.role === option.value 
-                          ? 'text-primary' 
-                          : 'text-gray-500'
+                          ? 'text-primary-500' 
+                          : 'text-text-secondary'
                       }`}>
-                        <div className={`text-2xl ${
+                        <div className={`text-3xl ${
                           formData.role === option.value 
-                            ? 'text-primary' 
-                            : 'text-gray-400'
+                            ? 'text-primary-500' 
+                            : 'text-text-muted'
                         }`}>
                           {option.icon}
                         </div>
                         <div>
-                          <div className="font-medium">{option.label}</div>
+                          <div className="font-bold text-lg">{option.label}</div>
                           <div className="text-sm opacity-75">{option.description}</div>
                         </div>
                       </div>
                       {formData.role === option.value && (
-                        <div className="absolute top-2 right-2 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        <div className="absolute top-3 right-3 w-5 h-5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-medium">
+                          <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                         </div>
                       )}
                     </label>
@@ -287,12 +291,12 @@ const Register = () => {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="form-label">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaLock className="h-5 w-5 text-text-muted" />
                 </div>
                 <input
                   id="password"
@@ -302,18 +306,18 @@ const Register = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`input-field pl-10 pr-12 ${errors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`form-input pl-12 pr-12 ${errors.password ? 'border-error focus:ring-error' : ''}`}
                   placeholder="Create a password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-muted hover:text-text-secondary transition-colors duration-200"
                 >
                   {showPassword ? (
-                    <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <FaEyeSlash className="h-5 w-5" />
                   ) : (
-                    <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <FaEye className="h-5 w-5" />
                   )}
                 </button>
               </div>
@@ -321,7 +325,7 @@ const Register = () => {
                 <motion.p
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="mt-1 text-sm text-red-600"
+                  className="form-error"
                 >
                   {errors.password}
                 </motion.p>
@@ -330,12 +334,12 @@ const Register = () => {
 
             {/* Confirm Password Field */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="confirmPassword" className="form-label">
                 Confirm Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaLock className="h-5 w-5 text-text-muted" />
                 </div>
                 <input
                   id="confirmPassword"
@@ -345,18 +349,18 @@ const Register = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`input-field pl-10 pr-12 ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  className={`form-input pl-12 pr-12 ${errors.confirmPassword ? 'border-error focus:ring-error' : ''}`}
                   placeholder="Confirm your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-muted hover:text-text-secondary transition-colors duration-200"
                 >
                   {showConfirmPassword ? (
-                    <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <FaEyeSlash className="h-5 w-5" />
                   ) : (
-                    <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <FaEye className="h-5 w-5" />
                   )}
                 </button>
               </div>
@@ -364,7 +368,7 @@ const Register = () => {
                 <motion.p
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="mt-1 text-sm text-red-600"
+                  className="form-error"
                 >
                   {errors.confirmPassword}
                 </motion.p>
@@ -378,31 +382,50 @@ const Register = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full btn-primary py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
-              <div className="flex items-center justify-center space-x-2">
+              <div className="flex items-center justify-center space-x-3">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                 <span>Creating account...</span>
               </div>
             ) : (
-              'Create Account'
+              <div className="flex items-center justify-center space-x-2">
+                <span>Create Account</span>
+                <FaArrowRight className="w-4 h-4" />
+              </div>
             )}
           </motion.button>
 
           {/* Links */}
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-base text-text-secondary">
               Already have an account?{' '}
               <Link
                 to="/login"
-                className="font-medium text-primary hover:text-primary-dark transition-colors duration-300"
+                className="font-semibold text-primary-500 hover:text-primary-600 transition-colors duration-200 underline-offset-2 hover:underline"
               >
                 Sign in here
               </Link>
             </p>
           </div>
         </motion.form>
+
+        {/* Back to Home */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="text-center"
+        >
+          <Link
+            to="/"
+            className="inline-flex items-center text-text-muted hover:text-primary-500 transition-colors duration-200"
+          >
+            <FaHome className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+        </motion.div>
       </motion.div>
     </div>
   );

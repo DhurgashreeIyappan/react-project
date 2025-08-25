@@ -3,34 +3,104 @@ module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        primary: '#4ECDC4', // Teal - main brand color
-        'primary-dark': '#45B7AA', // Darker teal for hover states
-        secondary: '#44A08D', // Green - complementary color
-        accent: '#FF6B35', // Orange - accent color
-        background: '#F8F7F4', // Soft off-white - main background
-        surface: '#FFFFFF', // White - card backgrounds
-        surfaceAlt: '#F3F4F6', // Light gray - alternate section backgrounds
-        text: {
-          primary: '#1F2937', // Dark gray - excellent readability
-          secondary: '#6B7280', // Medium gray - secondary text
-          muted: '#9CA3AF', // Light gray - muted text
+        // Requested palette
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          DEFAULT: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
         },
-        border: '#E5E7EB', // Soft gray - subtle borders
-        success: '#10B981', // Green - success states
-        warning: '#F59E0B', // Amber - warning states
-        error: '#EF4444', // Red - error states
-        highlight: '#F0FDFA', // Very light teal - subtle highlights
+        secondary: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          DEFAULT: '#14b8a6',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+        },
+        accent: {
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          DEFAULT: '#f59e0b',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
+        },
+        background: '#f9fafb',
+        surface: '#ffffff',
+        'surface-alt': '#f3f4f6',
+        text: {
+          primary: '#111827',
+          secondary: '#374151',
+          muted: '#6B7280',
+        },
+        border: '#E5E7EB',
+        success: '#10B981',
+        warning: '#F59E0B',
+        error: '#EF4444',
+        highlight: '#F0FDFA',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1' }],
+        '6xl': ['3.75rem', { lineHeight: '1' }],
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
+      },
+      borderRadius: {
+        '4xl': '2rem',
+        '5xl': '2.5rem',
+      },
+      boxShadow: {
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+        'medium': '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        'large': '0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+        'glow': '0 0 20px rgba(78, 205, 196, 0.3)',
+        'glow-lg': '0 0 40px rgba(78, 205, 196, 0.4)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
+        'slide-down': 'slideDown 0.3s ease-out',
         'bounce-gentle': 'bounceGentle 3s ease-in-out infinite',
+        'pulse-gentle': 'pulseGentle 2s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'shimmer': 'shimmer 2s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -41,10 +111,33 @@ module.exports = {
           '0%': { transform: 'translateY(20px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
+        slideDown: {
+          '0%': { transform: 'translateY(-20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
         bounceGentle: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        pulseGentle: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.8' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
+      backdropBlur: {
+        xs: '2px',
+      },
+      transitionProperty: {
+        'height': 'height',
+        'spacing': 'margin, padding',
       },
     },
   },
