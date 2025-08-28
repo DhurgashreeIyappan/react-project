@@ -5,39 +5,21 @@
 
 @layer base {
   :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --secondary: #14b8a6;
-    --accent: #f59e0b;
-    --background: #f9fafb;
-    --surface: #ffffff;
-    --surface-alt: #f3f4f6;
-    --text-primary: #111827;
-    --text-secondary: #374151;
-    --text-muted: #6B7280;
-    --border: #E5E7EB;
+    /* Bright theme tokens */
+    --color-primary: #2563EB;
+    --color-on-primary: #ffffff;
+    --color-accent: #F59E0B;
+    --color-background: #F9FAFB;
+    --color-surface: #FFFFFF;
+    --color-surface-alt: #F3F4F6;
+    --color-text-primary: #111827;
+    --color-text-secondary: #111827; /* align with text-primary for consistency */
+    --color-text-muted: #6B7280;
+    --color-border: #E5E7EB;
     --success: #10B981;
     --warning: #F59E0B;
     --error: #EF4444;
     --highlight: #F0FDFA;
-  }
-
-  .dark {
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --secondary: #14b8a6;
-    --accent: #f59e0b;
-    --background: #0b1220;
-    --surface: #111827;
-    --surface-alt: #1f2937;
-    --text-primary: #f9fafb;
-    --text-secondary: #e5e7eb;
-    --text-muted: #9ca3af;
-    --border: #374151;
-    --success: #22C55E;
-    --warning: #F59E0B;
-    --error: #EF4444;
-    --highlight: #0F172A;
   }
 
   * {
@@ -182,23 +164,14 @@
     @apply py-12 sm:py-16 lg:py-20;
   }
 
-  /* Dark Mode Specific */
-  .dark .glassmorphism {
-    @apply bg-black/20 backdrop-blur-md border border-white/10;
-  }
-
-  .dark .skeleton {
-    @apply bg-surface-alt;
-  }
+  /* Dark mode removed */
 }
 
 @layer utilities {
   /* Themed page background (gradient) */
   .bg-background {
+    background: var(--color-background);
     background-image: linear-gradient(to bottom right, #f9fafb, #f3f4f6, #e5e7eb);
-  }
-  .dark .bg-background {
-    background-image: linear-gradient(to bottom right, #111827, #1f2937, #374151);
   }
 
   /* Custom scrollbar */

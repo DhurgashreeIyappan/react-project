@@ -17,14 +17,13 @@ import EditProperty from './components/properties/EditProperty';
 import MyProperties from './components/properties/MyProperties';
 import MyBookings from './components/bookings/MyBookings';
 import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
+// ThemeProvider removed (single bright theme)
 import PrivateRoute from './components/auth/PrivateRoute';
 import ConditionalRoute from './components/auth/ConditionalRoute';
 import './App.css';
 
 function App() {
   return (
-    <ThemeProvider>
       <AuthProvider>
         <Router>
           <div className="App min-h-screen bg-background transition-colors duration-300">
@@ -111,7 +110,6 @@ function App() {
           </div>
         </Router>
       </AuthProvider>
-    </ThemeProvider>
   );
 }
 

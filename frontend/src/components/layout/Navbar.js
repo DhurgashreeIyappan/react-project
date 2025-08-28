@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
+// Dark mode removed
 import { 
   FaHome, 
   FaUser, 
@@ -10,8 +10,6 @@ import {
   FaList, 
   FaBookmark, 
   FaSearch, 
-  FaSun, 
-  FaMoon,
   FaBars,
   FaTimes,
   FaCog,
@@ -21,7 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout, isOwner, isRenter } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -86,7 +84,7 @@ const Navbar = () => {
   const isActiveRoute = (path) => location.pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-gradient-to-r from-indigo-500/90 to-purple-600/90 dark:from-gray-900/90 dark:to-gray-800/90 backdrop-blur-md border-b border-transparent shadow-medium transition-all duration-300">
+    <nav className="sticky top-0 z-50 bg-primary-500 backdrop-blur-md border-b border-transparent shadow-medium transition-all duration-300">
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -129,16 +127,7 @@ const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-3">
-            {/* Dark Mode Toggle */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleDarkMode}
-              className="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-all duration-200"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <FaSun className="w-5 h-5" /> : <FaMoon className="w-5 h-5" />}
-            </motion.button>
+            
 
             {/* User Menu */}
             {isAuthenticated ? (

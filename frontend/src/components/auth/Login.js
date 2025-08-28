@@ -60,7 +60,9 @@ const Login = () => {
 
     setLoading(true);
     try {
+      console.log('Submitting login with:', formData);
       const result = await login(formData.email, formData.password);
+      console.log('Login result:', result);
       if (result.success) {
         // Redirect renters to dashboard, others to home
         if (isRenter()) {

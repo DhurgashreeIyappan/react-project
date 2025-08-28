@@ -24,14 +24,25 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  if (!errors.isEmpty()) {
+    console.log('Login validation errors:', errors.array());
+    return res.status(400).json({ success: false, message: 'Invalid input', errors: errors.array() });
+  }
   const { email, password } = req.body;
+  console.log('Login attempt:', { email });
   const user = await User.findOne({ email }).select('+password');
-  if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+  if (!user) {
+    console.log('Login failed: user not found');
+    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+  }
   const ok = await user.comparePassword(password);
-  if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
+  if (!ok) {
+    console.log('Login failed: wrong password');
+    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+  }
   const token = signToken(user);
-  res.json({ token, user: { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
+  console.log('Login success for:', email);
+  res.json({ success: true, token, user: { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
 };
 
 export const me = async (req, res) => {

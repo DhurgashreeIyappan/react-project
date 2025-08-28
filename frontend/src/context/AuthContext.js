@@ -46,7 +46,13 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const res = await client.post('/auth/login', { email, password });
-      const { token: jwt, user: profile } = res.data;
+      console.log('Login API response:', res.status, res.data);
+      const { success, token: jwt, user: profile, message } = res.data;
+      if (success === false) {
+        const msg = message || 'Invalid credentials';
+        toast.error(msg);
+        return { success: false, message: msg };
+      }
       localStorage.setItem('token', jwt);
       setToken(jwt);
       setAuthToken(jwt);
@@ -54,6 +60,7 @@ export const AuthProvider = ({ children }) => {
       toast.success('Login successful');
       return { success: true };
     } catch (error) {
+      console.log('Login API error:', error?.response?.status, error?.response?.data);
       const message = error.response?.data?.message || 'Login failed';
       toast.error(message);
       return { success: false, message };
