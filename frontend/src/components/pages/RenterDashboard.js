@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaSearch, FaMapMarkerAlt, FaDollarSign, FaBed, FaBath, FaCalendar, FaBookmark, FaEye } from 'react-icons/fa';
+import { FaSearch, FaMapMarkerAlt, FaBed, FaBath, FaCalendar, FaBookmark, FaEye } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
 import toast from 'react-hot-toast';
@@ -210,7 +210,7 @@ const RenterDashboard = () => {
                         {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
                       </div>
                       <div className="flex items-center">
-                        <FaDollarSign className="mr-2" />
+                        <span className="mr-2 font-bold">₹</span>
                                        <span className="text-lg font-bold text-primary-500">
                  ₹{booking.property?.price?.toLocaleString()}
                </span>

@@ -61,26 +61,23 @@ const MyProperties = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Properties</h1>
-          <p className="text-gray-600">Manage your rental property listings</p>
-        </motion.div>
-
-        {/* Add Property Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-center mb-8"
-        >
-          <Link
-            to="/add-property"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-500 text-white font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-          >
-            <FaPlus className="mr-2" />
-            Add New Property
-          </Link>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Properties</h1>
+            <p className="text-gray-600">Manage your rental property listings</p>
+          </div>
+          
+          {/* Add Property Button */}
+          <div className="mt-4 sm:mt-0">
+            <Link
+              to="/add-property"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            >
+              <FaPlus className="mr-2" />
+              Add Property
+            </Link>
+          </div>
         </motion.div>
 
         {/* Properties List */}

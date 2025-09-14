@@ -60,28 +60,28 @@ const Home = () => {
 
   const features = [
     {
-      icon: <FaSearch className="text-3xl" />,
+      icon: <FaSearch className="text-3xl" style={{ color: '#007bff' }} />,
       title: 'Smart Search',
       description: 'Advanced filters and AI-powered recommendations to find your perfect match',
-      color: 'from-primary-500 to-primary-600'
+      color: 'from-blue-100 to-blue-200'
     },
     {
-      icon: <FaShieldAlt className="text-3xl" />,
+      icon: <FaShieldAlt className="text-3xl" style={{ color: '#ff9800' }} />,
       title: 'Verified Properties',
       description: 'All properties are verified and managed by trusted property owners',
-      color: 'from-secondary-500 to-secondary-600'
+      color: 'from-orange-100 to-orange-200'
     },
     {
-      icon: <FaClock className="text-3xl" />,
+      icon: <FaClock className="text-3xl" style={{ color: '#4caf50' }} />,
       title: 'Quick Booking',
       description: 'Seamless booking process with instant confirmation',
-      color: 'from-accent-500 to-accent-600'
+      color: 'from-green-100 to-green-200'
     },
     {
-      icon: <FaUsers className="text-3xl" />,
+      icon: <FaUsers className="text-3xl" style={{ color: '#673ab7' }} />,
       title: '24/7 Support',
       description: 'Round-the-clock customer support for all your needs',
-      color: 'from-indigo-500 to-purple-600'
+      color: 'from-purple-100 to-purple-200'
     }
   ];
 
@@ -95,7 +95,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-500 via-secondary-500 to-accent-500 min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)' }}>
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
@@ -282,7 +282,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="section-padding bg-surface-alt">
+      <section className="section-padding" style={{ backgroundColor: '#f9f9f9' }}>
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -305,9 +305,10 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center p-8 bg-surface rounded-3xl hover:shadow-medium transition-all duration-300"
+                className="text-center p-8 rounded-3xl hover:shadow-lg transition-all duration-300"
+                style={{ backgroundColor: '#ffffff', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}
               >
-                <div className={`w-20 h-20 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center text-white mx-auto mb-6 shadow-medium`}>
+                <div className={`w-20 h-20 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg`}>
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold text-text-primary mb-4">
@@ -323,7 +324,7 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-indigo-500 to-purple-600">
+      <section className="section-padding" style={{ background: 'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)' }}>
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -347,7 +348,7 @@ const Home = () => {
               </Link>
               <Link
                 to="/register"
-                className="inline-flex items-center px-8 py-4 border-2 border-white text-white font-bold text-lg rounded-2xl hover:bg-white hover:text-primary-500 transform hover:scale-105 transition-all duration-300"
+                className="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-bold text-lg rounded-2xl hover:bg-blue-50 hover:shadow-glow transform hover:scale-105 transition-all duration-300"
               >
                 Get Started
               </Link>

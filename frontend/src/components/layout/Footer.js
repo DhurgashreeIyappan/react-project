@@ -9,7 +9,6 @@ const Footer = () => {
   const footerLinks = [
     { name: 'Home', path: '/' },
     { name: 'Properties', path: '/properties' },
-    { name: 'About Us', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
 
@@ -85,15 +84,15 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-start space-x-3 text-white/80">
                 <FaMapMarkerAlt className="text-white mt-1 flex-shrink-0" />
-                <span>123 Rental Street, City, State 12345</span>
+                <span>123 MG Road, Bangalore, Karnataka 560001, India</span>
               </div>
               <div className="flex items-center space-x-3 text-white/80">
                 <FaPhone className="text-white flex-shrink-0" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 98765 43210</span>
               </div>
               <div className="flex items-center space-x-3 text-white/80">
                 <FaEnvelope className="text-white flex-shrink-0" />
-                <span>info@rentnest.com</span>
+                <span>info@rentnest.in</span>
               </div>
             </div>
           </motion.div>

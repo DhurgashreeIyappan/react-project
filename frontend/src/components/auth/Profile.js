@@ -180,6 +180,16 @@ const Profile = () => {
           <p className="text-gray-600">Manage your account settings and preferences</p>
         </motion.div>
 
+        {/* Profile Information Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-6"
+        >
+          <h2 className="text-2xl font-bold text-gray-900">Profile Information</h2>
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Picture Section */}
           <motion.div
@@ -188,25 +198,27 @@ const Profile = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="lg:col-span-1"
           >
-            <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-              <div className="relative mb-6">
-                <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600">
-                  {formData.profilePicture ? (
-                    <img
-                      src={formData.profilePicture}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <FaUser className="text-white text-4xl" />
-                    </div>
-                  )}
+            <div className="bg-white rounded-3xl shadow-2xl p-8 text-center" style={{ boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+              <div className="relative mb-8">
+                <div className="w-40 h-40 mx-auto rounded-full overflow-hidden bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-1">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-white">
+                    {formData.profilePicture ? (
+                      <img
+                        src={formData.profilePicture}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+                        <FaUser className="text-white text-5xl" />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 {isEditing && (
-                  <label className="absolute bottom-0 right-0 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-indigo-700 transition-colors duration-200">
-                    <FaCamera />
+                  <label className="absolute bottom-2 right-2 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center cursor-pointer hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <FaCamera className="text-lg" />
                     <input
                       type="file"
                       accept="image/*"
@@ -217,20 +229,24 @@ const Profile = () => {
                 )}
               </div>
 
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 {user.name || 'User Name'}
               </h2>
-              <p className="text-gray-600 mb-4">
-                {user.role === 'owner' ? 'Property Owner' : 'Property Renter'}
-              </p>
               
-              <div className="flex items-center justify-center space-x-2 mb-4">
-                {user.role === 'owner' ? (
-                  <FaHome className="text-primary-500" />
-                ) : (
-                                     <FaUserTie className="text-primary-500" />
-                )}
-                <span className="text-sm text-gray-500 capitalize">{user.role}</span>
+              {/* Role Badge */}
+              <div className="mb-6">
+                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
+                  user.role === 'owner' 
+                    ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200' 
+                    : 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border border-blue-200'
+                }`}>
+                  {user.role === 'owner' ? (
+                    <FaHome className="mr-2 text-green-600" />
+                  ) : (
+                    <FaUserTie className="mr-2 text-blue-600" />
+                  )}
+                  {user.role === 'owner' ? 'Property Owner' : 'Property Renter'}
+                </span>
               </div>
 
               {!isEditing && (
@@ -254,15 +270,15 @@ const Profile = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-2"
           >
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="bg-white rounded-3xl shadow-2xl p-8" style={{ boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+              <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Name Field */}
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-3">
                     Full Name
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <FaUser className="h-5 w-5 text-gray-400" />
                     </div>
                     <input
@@ -272,22 +288,27 @@ const Profile = () => {
                       disabled={!isEditing}
                       value={formData.name}
                       onChange={handleChange}
-                      className={`input-field pl-10 ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''} ${errors.name ? 'border-red-500 focus:ring-red-500' : ''}`}
+                      className={`w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-gray-700 placeholder-gray-400 ${
+                        !isEditing ? 'bg-gray-100 cursor-not-allowed' : 'hover:border-gray-300'
+                      } ${errors.name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                       placeholder="Enter your full name"
                     />
                   </div>
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                      {errors.name}
+                    </p>
                   )}
                 </div>
 
                 {/* Email Field */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-3">
                     Email Address
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <FaEnvelope className="h-5 w-5 text-gray-400" />
                     </div>
                     <input
@@ -297,22 +318,27 @@ const Profile = () => {
                       disabled={!isEditing}
                       value={formData.email}
                       onChange={handleChange}
-                      className={`input-field pl-10 ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''} ${errors.email ? 'border-red-500 focus:ring-red-500' : ''}`}
+                      className={`w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-gray-700 placeholder-gray-400 ${
+                        !isEditing ? 'bg-gray-100 cursor-not-allowed' : 'hover:border-gray-300'
+                      } ${errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                       placeholder="Enter your email"
                     />
                   </div>
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                      {errors.email}
+                    </p>
                   )}
                 </div>
 
                 {/* Phone Field */}
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-3">
                     Phone Number
                   </label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <FaPhone className="h-5 w-5 text-gray-400" />
                     </div>
                     <input
@@ -322,18 +348,23 @@ const Profile = () => {
                       disabled={!isEditing}
                       value={formData.phone}
                       onChange={handleChange}
-                      className={`input-field pl-10 ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''} ${errors.phone ? 'border-red-500 focus:ring-red-500' : ''}`}
+                      className={`w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-gray-700 placeholder-gray-400 ${
+                        !isEditing ? 'bg-gray-100 cursor-not-allowed' : 'hover:border-gray-300'
+                      } ${errors.phone ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}
                       placeholder="Enter your phone number"
                     />
                   </div>
                   {errors.phone && (
-                    <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+                    <p className="mt-2 text-sm text-red-600 flex items-center">
+                      <span className="w-1 h-1 bg-red-500 rounded-full mr-2"></span>
+                      {errors.phone}
+                    </p>
                   )}
                 </div>
 
                 {/* Bio Field */}
                 <div>
-                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="bio" className="block text-sm font-semibold text-gray-700 mb-3">
                     Bio
                   </label>
                   <textarea
@@ -343,20 +374,22 @@ const Profile = () => {
                     disabled={!isEditing}
                     value={formData.bio}
                     onChange={handleChange}
-                    className={`input-field ${!isEditing ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                    className={`w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-gray-700 placeholder-gray-400 resize-none ${
+                      !isEditing ? 'bg-gray-100 cursor-not-allowed' : 'hover:border-gray-300'
+                    }`}
                     placeholder="Tell us a bit about yourself..."
                   />
                 </div>
 
                 {/* Action Buttons */}
                 {isEditing && (
-                  <div className="flex space-x-4 pt-4">
+                  <div className="flex space-x-4 pt-6">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       type="submit"
                       disabled={loading}
-                      className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     >
                       {loading ? (
                         <div className="flex items-center justify-center space-x-2">
@@ -376,7 +409,7 @@ const Profile = () => {
                       whileTap={{ scale: 0.98 }}
                       type="button"
                       onClick={handleCancel}
-                      className="flex-1 btn-secondary"
+                      className="flex-1 px-8 py-4 bg-gray-200 text-gray-700 font-bold text-lg rounded-xl hover:bg-gray-300 transform hover:scale-105 transition-all duration-300"
                     >
                       <FaTimes className="mr-2" />
                       Cancel
@@ -387,36 +420,66 @@ const Profile = () => {
             </div>
 
             {/* Account Stats */}
-            <div className="mt-8 bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Statistics</h3>
+            <div className="mt-8 bg-white rounded-3xl shadow-2xl p-8" style={{ boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Account Statistics</h3>
               {user.role === 'owner' ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-lg text-white">
-                    <div className="text-2xl font-bold">{stats.propertiesListed}</div>
-                    <div className="text-sm opacity-90">Properties Listed</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-3xl">🏠</div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold">{stats.propertiesListed}</div>
+                        <div className="text-sm opacity-90">Properties Listed</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-lg text-white">
-                    <div className="text-2xl font-bold">{stats.bookingsReceived}</div>
-                    <div className="text-sm opacity-90">Bookings Received</div>
+                  <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-3xl">📅</div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold">{stats.bookingsReceived}</div>
+                        <div className="text-sm opacity-90">Bookings Received</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-accent-500 to-primary-600 rounded-lg text-white">
-                    <div className="text-2xl font-bold">{stats.reviewsGiven}</div>
-                    <div className="text-sm opacity-90">Reviews Given</div>
+                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-3xl">⭐</div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold">{stats.reviewsGiven}</div>
+                        <div className="text-sm opacity-90">Reviews Given</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-lg text-white">
-                    <div className="text-2xl font-bold">{stats.bookingsMade}</div>
-                    <div className="text-sm opacity-90">Properties Booked</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-3xl">🏠</div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold">{stats.bookingsMade}</div>
+                        <div className="text-sm opacity-90">Properties Booked</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-secondary-500 to-accent-500 rounded-lg text-white">
-                    <div className="text-2xl font-bold">{stats.reviewsGiven}</div>
-                    <div className="text-sm opacity-90">Reviews Given</div>
+                  <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-3xl">⭐</div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold">{stats.reviewsGiven}</div>
+                        <div className="text-sm opacity-90">Reviews Given</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-accent-500 to-primary-600 rounded-lg text-white">
-                    <div className="text-2xl font-bold">{stats.propertiesListed}</div>
-                    <div className="text-sm opacity-90">Properties Listed</div>
+                  <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-3xl">💼</div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold">{stats.propertiesListed}</div>
+                        <div className="text-sm opacity-90">Properties Listed</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

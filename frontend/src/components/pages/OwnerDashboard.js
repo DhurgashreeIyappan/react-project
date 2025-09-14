@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaPlus, FaEdit, FaEye, FaTrash, FaHome, FaMapMarkerAlt, FaDollarSign, FaBed, FaBath, FaCalendar } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaEye, FaTrash, FaHome, FaMapMarkerAlt, FaBed, FaBath, FaCalendar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
 import toast from 'react-hot-toast';
@@ -86,13 +86,26 @@ const OwnerDashboard = () => {
     <div className="min-h-screen bg-background bg-app-pattern">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.name}!
-          </h1>
-          <p className="text-gray-600">
-            Manage your properties and view your listings
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome back, {user?.name}!
+            </h1>
+            <p className="text-gray-600">
+              Manage your properties and view your listings
+            </p>
+          </div>
+          
+          {/* Add Property Button */}
+          <div className="mt-4 sm:mt-0">
+            <Link
+              to="/add-property"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            >
+              <FaPlus className="mr-2" />
+              Add Property
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}
@@ -135,7 +148,7 @@ const OwnerDashboard = () => {
           >
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
-                <FaDollarSign className="text-yellow-600 text-xl" />
+                <span className="text-yellow-600 text-xl font-bold">₹</span>
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Value</p>
@@ -179,18 +192,6 @@ const OwnerDashboard = () => {
           </motion.div>
         </div>
 
-        {/* Add Property Button */}
-        <div className="mb-8">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              to="/add-property"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <FaPlus className="mr-2" />
-              Add New Property
-            </Link>
-          </motion.div>
-        </div>
 
         {/* Properties Grid */}
         <div className="bg-white rounded-lg shadow mb-8">

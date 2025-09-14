@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaHome, FaMapMarkerAlt, FaDollarSign, FaBed, FaBath, FaRulerCombined, FaUpload, FaTimes, FaSave } from 'react-icons/fa';
+import { FaHome, FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaUpload, FaTimes, FaSave } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import client from '../../api/client';
@@ -314,11 +314,11 @@ const AddProperty = () => {
             {/* Price */}
             <div>
               <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                Monthly Rent ($) *
+                Monthly Rent (₹) *
               </label>
                               <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaDollarSign className="text-gray-400" />
+                    <span className="text-gray-400 font-bold">₹</span>
                   </div>
                   <input
                   id="price"

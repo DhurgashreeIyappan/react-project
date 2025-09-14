@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { FaCalendar, FaMapMarkerAlt, FaDollarSign, FaClock, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
+import { FaCalendar, FaMapMarkerAlt, FaClock, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import client from '../../api/client';
@@ -221,7 +221,7 @@ const BookingCard = ({ booking, isOwner, onStatusUpdate, index, getStatusColor, 
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">
-                    <FaDollarSign className="mr-1" />
+                    <span className="mr-1 font-bold">₹</span>
                     ₹{booking.property?.price?.toLocaleString()}
                   </span>
                   <span className="flex items-center">
@@ -293,7 +293,7 @@ const BookingCard = ({ booking, isOwner, onStatusUpdate, index, getStatusColor, 
                 <div className="space-y-2 text-sm text-gray-600">
                   <p><span className="font-medium">Start Date:</span> {new Date(booking.startDate).toLocaleDateString()}</p>
                   <p><span className="font-medium">End Date:</span> {new Date(booking.endDate).toLocaleDateString()}</p>
-                  <p><span className="font-medium">Total Amount:</span> ${booking.totalAmount || 'N/A'}</p>
+                  <p><span className="font-medium">Total Amount:</span> ₹{booking.totalAmount || 'N/A'}</p>
                   <p><span className="font-medium">Created:</span> {new Date(booking.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
