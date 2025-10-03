@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { getDisplayStatus } from '../../utils/status';
 import { Link } from 'react-router-dom';
 import { 
   FaHeart, 
@@ -16,6 +18,7 @@ import {
 import { motion } from 'framer-motion';
 
 const PropertyCard = ({ property, showLink = true }) => {
+  const { user, isOwner } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
@@ -68,6 +71,8 @@ const PropertyCard = ({ property, showLink = true }) => {
     if (property.ac) amenities.push({ icon: <FaSnowflake />, label: 'AC' });
     return amenities.slice(0, 3); // Show max 3 amenities
   };
+
+  const getStatus = () => getDisplayStatus(property, user, { perspective: isOwner && isOwner() ? 'owner' : 'renter' });
 
   const cardContent = (
     <>
@@ -151,6 +156,13 @@ const PropertyCard = ({ property, showLink = true }) => {
         {/* Price Badge */}
         <div className="absolute top-3 left-3 bg-gradient-to-r from-primary-600 to-secondary-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-medium">
           {formatPrice(property.price)}/month
+        </div>
+
+        {/* Status Badge */}
+        <div className="absolute top-3 right-3">
+          {(() => { const s = getStatus(); return (
+            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${s.cls}`}>{s.label}</span>
+          ); })()}
         </div>
 
         {/* Property Type Badge */}

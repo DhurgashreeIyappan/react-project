@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaStar, FaHeart, FaCalendar, FaUser, FaEdit, FaChevronLeft, FaChevronRight, FaTrash, FaTimes } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
+import { getDisplayStatus } from '../../utils/status';
 import toast from 'react-hot-toast';
 
 const PropertyDetail = () => {
@@ -23,6 +24,8 @@ const PropertyDetail = () => {
 
   // Check if current user owns this property
   const isPropertyOwner = property && user && isOwner() && property.owner?._id === user.id;
+
+  const getDetailStatus = () => getDisplayStatus(property, user, { perspective: isPropertyOwner ? 'owner' : 'renter' });
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -124,30 +127,32 @@ const PropertyDetail = () => {
   return (
     <div className="min-h-screen bg-background bg-app-pattern">
       {/* Hero Image Section */}
-      <div className="relative h-96 md:h-[500px] bg-gray-200">
+      <div className="relative bg-gray-200">
         {property.images && property.images.length > 0 ? (
           <>
-            <img
-              src={getImageUrl(property.images[currentImageIndex])}
-              alt={property.title}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = '/placeholder-property.svg';
-              }}
-            />
+            <div className="w-full flex items-center justify-center" style={{ maxHeight: '70vh' }}>
+              <img
+                src={getImageUrl(property.images[currentImageIndex])}
+                alt={property.title}
+                className="max-h-[70vh] w-auto max-w-full object-contain"
+                onError={(e) => {
+                  e.target.src = '/placeholder-property.svg';
+                }}
+              />
+            </div>
             
             {/* Image Navigation */}
             {property.images.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200 shadow-lg"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200 shadow-lg border border-gray-200"
                 >
                   <FaChevronLeft className="text-gray-600 text-lg" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200 shadow-lg"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200 shadow-lg border border-gray-200"
                 >
                   <FaChevronRight className="text-gray-600 text-lg" />
                 </button>
@@ -168,15 +173,24 @@ const PropertyDetail = () => {
             )}
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            <FaUser className="text-8xl" />
+          <div className="w-full flex items-center justify-center" style={{ maxHeight: '70vh' }}>
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <FaUser className="text-8xl" />
+            </div>
           </div>
         )}
         
+        {/* Status Badge */}
+          <div className="absolute top-6 left-6">
+          {(() => { const s = getDetailStatus(); return (
+            <span className={`px-3 py-1 text-sm font-semibold rounded-full ${s.cls}`}>{s.label}</span>
+          ); })()}
+          </div>
+
         {/* Like Button */}
         <button
           onClick={() => setIsLiked(!isLiked)}
-          className="absolute top-6 right-6 w-14 h-14 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200 shadow-lg"
+          className="absolute top-6 right-6 w-14 h-14 bg-white/90 rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200 shadow-lg border border-gray-200"
         >
           <FaHeart className={`text-2xl ${isLiked ? 'text-red-500' : 'text-gray-400'}`} />
         </button>
@@ -203,8 +217,8 @@ const PropertyDetail = () => {
       </div>
 
       {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Property Header */}
@@ -212,16 +226,16 @@ const PropertyDetail = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-2xl shadow-lg p-8 mb-8"
+              className="bg-white rounded-2xl shadow-lg p-5 mb-4"
             >
               <div className="mb-6">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">{property.title}</h1>
-                <div className="flex items-center text-gray-600 mb-4">
+                <h1 className="text-3xl font-bold text-gray-900 mb-3">{property.title}</h1>
+                <div className="flex items-center text-gray-600 mb-3">
                   <FaMapMarkerAlt className="text-primary-500 mr-2 text-xl" />
                   <span className="text-lg">{property.location}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="text-4xl font-bold text-primary-500">₹{property.price?.toLocaleString()}/month</div>
+                  <div className="text-3xl font-bold text-primary-500">₹{property.price?.toLocaleString()}/month</div>
                   <div className="flex items-center space-x-2">
                     <FaStar className="text-yellow-400 text-xl" />
                     <span className="text-gray-600 font-medium text-lg">
@@ -232,7 +246,7 @@ const PropertyDetail = () => {
               </div>
 
               {/* Property Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center p-4 bg-surface-alt rounded-xl">
                   <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
                     <FaBed className="text-white text-2xl" />
@@ -274,10 +288,10 @@ const PropertyDetail = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="bg-white rounded-2xl shadow-lg p-8 mb-8"
+              className="bg-white rounded-2xl shadow-lg p-5 mb-4"
             >
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">Description</h3>
-              <p className="text-gray-600 leading-relaxed text-lg">{property.description}</p>
+              <p className="text-gray-600 leading-relaxed text-base line-clamp-5">{property.description}</p>
             </motion.div>
 
             {/* Amenities */}
@@ -286,11 +300,11 @@ const PropertyDetail = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-white rounded-2xl shadow-lg p-8"
+                className="bg-white rounded-2xl shadow-lg p-5"
               >
                 <h3 className="text-2xl font-semibold text-gray-900 mb-6">Amenities</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {property.amenities.map((amenity, index) => (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {property.amenities.slice(0,6).map((amenity, index) => (
                     <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                       <div className="w-3 h-3 bg-primary rounded-full"></div>
                       <span className="text-gray-700 font-medium">{amenity}</span>
@@ -307,7 +321,7 @@ const PropertyDetail = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-white rounded-2xl shadow-lg p-8 sticky top-8"
+              className="bg-white rounded-2xl shadow-lg p-5 sticky top-6"
             >
               <h3 className="text-xl font-semibold text-gray-900 mb-6">Property Information</h3>
               
@@ -329,11 +343,9 @@ const PropertyDetail = () => {
                 
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-600">Status:</span>
-                  <span className={`font-semibold px-3 py-1 rounded-full text-sm ${
-                    property.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {property.isAvailable ? 'Available' : 'Unavailable'}
-                  </span>
+                  {(() => { const s = getDetailStatus(); return (
+                    <span className={`font-semibold px-3 py-1 rounded-full text-sm ${s.cls}`}>{s.label}</span>
+                  ); })()}
                 </div>
 
                 {/* Owner Information */}
@@ -353,8 +365,8 @@ const PropertyDetail = () => {
                 )}
               </div>
 
-              {/* Booking Button - Only show for renters who don't own this property */}
-              {isRenter() && !isPropertyOwner && property.isAvailable && (
+              {/* Booking Button - Only show for renters who don't own this property and when Available */}
+              {isRenter() && !isPropertyOwner && getDetailStatus().label === 'Available' && (
                 <button 
                   onClick={() => setShowBookingModal(true)}
                   className="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 mt-6"

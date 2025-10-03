@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import connectDB from './src/config/db.js';
 import authRoutes from './src/routes/auth.routes.js';
 import userRoutes from './src/routes/user.routes.js';
+import renterRoutes from './src/routes/renter.routes.js';
 import propertyRoutes from './src/routes/property.routes.js';
 import bookingRoutes from './src/routes/booking.routes.js';
 import contentRoutes from './src/routes/content.routes.js';
@@ -36,6 +37,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/renter', renterRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/content', contentRoutes);

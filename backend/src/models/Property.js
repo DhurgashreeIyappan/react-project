@@ -23,7 +23,10 @@ const propertySchema = new mongoose.Schema({
   reviews: { type: Number, default: 0 },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   isAvailable: { type: Boolean, default: true },
-  featured: { type: Boolean, default: false }
+  featured: { type: Boolean, default: false },
+  // Track current booking state
+  bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  activeBooking: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', default: null }
 }, { timestamps: true });
 
 // Add text search index

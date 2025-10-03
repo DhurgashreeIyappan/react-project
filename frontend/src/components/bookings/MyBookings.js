@@ -200,9 +200,10 @@ const BookingCard = ({ booking, isOwner, onStatusUpdate, index, getStatusColor, 
               <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
                 {booking.property?.images?.[0] ? (
                   <img
-                    src={booking.property.images[0]}
-                    alt={booking.property.title}
+                    src={booking.property.images[0]?.filename ? `http://localhost:5000/api/images/${booking.property.images[0].filename}` : (booking.property.images[0] || '/placeholder-property.svg')}
+                    alt={booking.property?.title || 'Property'}
                     className="w-full h-full object-cover"
+                    onError={(e) => { e.target.src = '/placeholder-property.svg'; }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -277,13 +278,15 @@ const BookingCard = ({ booking, isOwner, onStatusUpdate, index, getStatusColor, 
             className="mt-6 pt-6 border-t border-gray-200"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* User Information */}
+              {/* Owner Information */}
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">User Information</h4>
+                <h4 className="font-semibold text-gray-900 mb-3">Owner Information</h4>
                 <div className="space-y-2 text-sm text-gray-600">
-                  <p><span className="font-medium">Name:</span> {booking.user?.name || 'N/A'}</p>
-                  <p><span className="font-medium">Email:</span> {booking.user?.email || 'N/A'}</p>
-                  <p><span className="font-medium">Phone:</span> {booking.user?.phone || 'N/A'}</p>
+                  <p><span className="font-medium">Name:</span> {booking.property?.owner?.name || 'N/A'}</p>
+                  <p><span className="font-medium">Email:</span> {booking.property?.owner?.email || 'N/A'}</p>
+                  {booking.property?.owner?.phone && (
+                    <p><span className="font-medium">Phone:</span> {booking.property.owner.phone}</p>
+                  )}
                 </div>
               </div>
 
@@ -293,7 +296,7 @@ const BookingCard = ({ booking, isOwner, onStatusUpdate, index, getStatusColor, 
                 <div className="space-y-2 text-sm text-gray-600">
                   <p><span className="font-medium">Start Date:</span> {new Date(booking.startDate).toLocaleDateString()}</p>
                   <p><span className="font-medium">End Date:</span> {new Date(booking.endDate).toLocaleDateString()}</p>
-                  <p><span className="font-medium">Total Amount:</span> ₹{booking.totalAmount || 'N/A'}</p>
+                  <p><span className="font-medium">Total Amount:</span> ₹{booking.property?.price?.toLocaleString() || 'N/A'}</p>
                   <p><span className="font-medium">Created:</span> {new Date(booking.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>

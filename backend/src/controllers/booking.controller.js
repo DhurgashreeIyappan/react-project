@@ -2,13 +2,32 @@ import Booking from '../models/Booking.js';
 import Property from '../models/Property.js';
 
 export const createBooking = async (req, res) => {
-  const { property, startDate, endDate, message } = req.body;
-  const booking = await Booking.create({ user: req.user.id, property, startDate, endDate, message });
-  res.status(201).json({ booking });
+  try {
+    const { property, startDate, endDate, message } = req.body;
+    const targetProperty = await Property.findById(property);
+    if (!targetProperty) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+    if (!targetProperty.isAvailable) {
+      return res.status(400).json({ message: 'Property is not available for booking' });
+    }
+    const booking = await Booking.create({ user: req.user.id, property, startDate, endDate, message });
+    res.status(201).json({ booking });
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    res.status(500).json({ message: 'Error creating booking' });
+  }
 };
 
 export const myBookings = async (req, res) => {
-  const bookings = await Booking.find({ user: req.user.id }).populate('property').sort({ createdAt: -1 });
+  const bookings = await Booking.find({ user: req.user.id })
+    .populate({
+      path: 'property',
+      select: 'title location price images owner bookedBy activeBooking isAvailable',
+      populate: { path: 'owner', select: 'name email phone' }
+    })
+    .populate('user', 'name email phone')
+    .sort({ createdAt: -1 });
   res.json({ bookings });
 };
 
@@ -69,7 +88,33 @@ export const updateStatus = async (req, res) => {
       { status }, 
       { new: true }
     ).populate('user', 'name email phone').populate('property', 'title location price images owner');
-    
+
+    // If accepted, mark property as unavailable, set bookedBy and activeBooking,
+    // and reject all other pending bookings for this property
+    if (status === 'accepted') {
+      await Property.findByIdAndUpdate(booking.property._id, {
+        isAvailable: false,
+        bookedBy: booking.user,
+        activeBooking: booking._id
+      });
+      await Booking.updateMany(
+        { _id: { $ne: booking._id }, property: booking.property._id, status: { $in: ['pending'] } },
+        { $set: { status: 'rejected' } }
+      );
+    }
+
+    // If cancelled or rejected after acceptance, free up the property
+    if (['cancelled'].includes(status)) {
+      const propertyDoc = await Property.findById(booking.property._id);
+      if (propertyDoc && String(propertyDoc.activeBooking) === String(booking._id)) {
+        await Property.findByIdAndUpdate(booking.property._id, {
+          isAvailable: true,
+          bookedBy: null,
+          activeBooking: null
+        });
+      }
+    }
+
     res.json({ booking: updatedBooking });
   } catch (error) {
     console.error('Error updating booking status:', error);

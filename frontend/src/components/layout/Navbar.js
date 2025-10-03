@@ -13,7 +13,8 @@ import {
   FaBars,
   FaTimes,
   FaCog,
-  FaHeart
+  FaHeart,
+  FaSquare
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -54,7 +55,7 @@ const Navbar = () => {
     }
     return [
       { name: 'Home', path: '/', icon: <FaHome className="w-4 h-4" /> },
-      { name: 'Properties', path: '/properties', icon: <FaSearch className="w-4 h-4" /> },
+      { name: 'Properties', path: '/properties', icon: <FaList className="w-4 h-4" /> },
       { name: 'Contact', path: '/contact', icon: <FaHeart className="w-4 h-4" /> },
     ];
   };

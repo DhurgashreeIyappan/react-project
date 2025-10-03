@@ -24,7 +24,8 @@ const Home = () => {
 
   const fetchProperties = async () => {
     try {
-      const response = await client.get('/properties');
+      // Load featured properties and include unavailable so badges can display
+      const response = await client.get('/properties?featured=true&includeUnavailable=true');
       setProperties(response.data.properties);
     } catch (error) {
       console.error('Error fetching properties:', error);

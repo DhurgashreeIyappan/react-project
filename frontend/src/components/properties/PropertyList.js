@@ -3,6 +3,8 @@ import { useLocation, Link } from 'react-router-dom';
 import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaBed, FaBath } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import client from '../../api/client';
+import { useAuth } from '../../context/AuthContext';
+import { getDisplayStatus } from '../../utils/status';
 
 const PropertyList = () => {
   const location = useLocation();
@@ -42,7 +44,7 @@ const PropertyList = () => {
 
   const fetchProperties = async () => {
     try {
-      const response = await client.get('/properties');
+      const response = await client.get('/properties?includeUnavailable=true');
       setProperties(response.data.properties);
       setFilteredProperties(response.data.properties);
     } catch (error) {
@@ -407,6 +409,7 @@ const PropertyList = () => {
 
 // Property Card Component
 const PropertyCard = ({ property }) => {
+  const { isAuthenticated } = useAuth();
   const getImageUrl = (image) => {
     if (image && image.filename) {
       return `http://localhost:5000/api/images/${image.filename}`;
@@ -417,37 +420,39 @@ const PropertyCard = ({ property }) => {
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col"
     >
       {/* Property Image */}
-      <div className="relative h-48 bg-gray-200">
-        <img
-          src={getImageUrl(property.images?.[0])}
-          alt={property.title}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.target.src = '/placeholder-property.svg';
-          }}
-        />
-        <div className="absolute top-2 right-2">
-          <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-            Available
-          </span>
+      <div className="relative bg-gray-100">
+        <div className="w-full" style={{ aspectRatio: '16 / 9' }}>
+          <img
+            src={getImageUrl(property.images?.[0])}
+            alt={property.title}
+            className="w-full h-full object-contain"
+            onError={(e) => { e.target.src = '/placeholder-property.svg'; }}
+          />
         </div>
+        {isAuthenticated && (
+          <div className="absolute top-2 right-2">
+            {(() => { const s = getDisplayStatus(property, null, { perspective: 'renter' }); return (
+              <span className={`px-2 py-1 text-xs font-medium rounded-full ${s.cls}`}>{s.label}</span>
+            ); })()}
+          </div>
+        )}
       </div>
 
       {/* Property Details */}
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-1">
+      <div className="p-5 flex flex-col gap-3">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-1">
           {property.title}
         </h3>
         
-        <div className="flex items-center text-gray-600 mb-2">
+        <div className="flex items-center text-gray-600">
           <FaMapMarkerAlt className="mr-2 text-gray-400" />
-          <span className="text-sm">{property.location}</span>
+          <span className="text-sm sm:text-[15px]">{property.location}</span>
         </div>
 
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 text-sm text-gray-600">
             <span className="flex items-center">
               <FaBed className="mr-1" />
@@ -458,7 +463,7 @@ const PropertyCard = ({ property }) => {
               {property.bathrooms || 0}
             </span>
           </div>
-                         <span className="text-lg font-bold text-primary-500">
+          <span className="text-lg font-bold text-primary-500">
             ₹{property.price?.toLocaleString()}
           </span>
         </div>
@@ -466,7 +471,7 @@ const PropertyCard = ({ property }) => {
         {/* Action Button */}
         <Link
           to={`/properties/${property._id}`}
-          className="w-full bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center"
+          className="mt-1 w-full bg-primary text-white px-4 py-2 rounded text-sm font-medium hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center"
         >
           View Details
         </Link>

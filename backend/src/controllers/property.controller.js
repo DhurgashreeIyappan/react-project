@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator';
 import Property from '../models/Property.js';
+import Booking from '../models/Booking.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -198,6 +199,27 @@ export const getProperty = async (req, res) => {
     propertyData.propertyType = propertyData.type;
   }
 
+  // Attach minimal active booking info if present for status calculation
+  if (propertyData.activeBooking) {
+    const active = await Booking.findById(propertyData.activeBooking).select('startDate endDate status user');
+    if (active) {
+      propertyData.activeBooking = {
+        _id: active._id,
+        startDate: active.startDate,
+        endDate: active.endDate,
+        status: active.status,
+        user: active.user
+      };
+      propertyData.currentBooking = propertyData.activeBooking;
+    }
+  }
+
+  // Compute a simple status string for convenience on the frontend
+  propertyData.status = propertyData.isAvailable ? 'available' : 'booked';
+  if (!propertyData.isAvailable && propertyData.currentBooking && propertyData.currentBooking.endDate && new Date(propertyData.currentBooking.endDate) < new Date()) {
+    propertyData.status = 'awaiting_reset';
+  }
+
   res.json({ property: propertyData });
 };
 
@@ -214,11 +236,16 @@ export const listProperties = async (req, res) => {
       bathroomsMin,
       furnished,
       petFriendly,
+      featured,
+      includeUnavailable,
       page = 1,
       limit = 12
     } = req.query;
 
-    const filter = { isAvailable: true }; // Only show available properties
+    const filter = {};
+    if (!includeUnavailable || includeUnavailable === 'false') {
+      filter.isAvailable = true;
+    }
 
     if (q) {
       filter.$or = [
@@ -239,19 +266,40 @@ export const listProperties = async (req, res) => {
     if (petFriendly === 'false') filter.petFriendly = false;
 
     const skip = (Number(page) - 1) * Number(limit);
+    if (featured === 'true') {
+      filter.featured = true;
+    }
+
     const [items, total] = await Promise.all([
-      Property.find(filter).populate('owner', 'name').sort({ createdAt: -1 }).skip(skip).limit(Number(limit)),
+      Property.find(filter).populate('owner', 'name bookedBy').sort({ createdAt: -1 }).skip(skip).limit(Number(limit)),
       Property.countDocuments(filter)
     ]);
 
     // Ensure propertyType field is populated for frontend compatibility
-    const properties = items.map(item => {
+    const properties = await Promise.all(items.map(async (item) => {
       const property = item.toObject();
       if (property.type && !property.propertyType) {
         property.propertyType = property.type;
       }
+      if (property.activeBooking) {
+        const active = await Booking.findById(property.activeBooking).select('startDate endDate status user');
+        if (active) {
+          property.activeBooking = {
+            _id: active._id,
+            startDate: active.startDate,
+            endDate: active.endDate,
+            status: active.status,
+            user: active.user
+          };
+          property.currentBooking = property.activeBooking;
+        }
+      }
+      property.status = property.isAvailable ? 'available' : 'booked';
+      if (!property.isAvailable && property.currentBooking && property.currentBooking.endDate && new Date(property.currentBooking.endDate) < new Date()) {
+        property.status = 'awaiting_reset';
+      }
       return property;
-    });
+    }));
 
     res.json({ properties, total, page: Number(page), totalPages: Math.ceil(total / Number(limit)) });
   } catch (error) {
@@ -266,18 +314,81 @@ export const getAllPropertiesForOwner = async (req, res) => {
     const items = await Property.find({ owner: req.user.id }).sort({ createdAt: -1 });
 
     // Ensure propertyType field is populated for frontend compatibility
-    const properties = items.map(item => {
+    const properties = await Promise.all(items.map(async (item) => {
       const property = item.toObject();
       if (property.type && !property.propertyType) {
         property.propertyType = property.type;
       }
+      if (property.activeBooking) {
+        const active = await Booking.findById(property.activeBooking).select('startDate endDate status user');
+        if (active) {
+          property.activeBooking = {
+            _id: active._id,
+            startDate: active.startDate,
+            endDate: active.endDate,
+            status: active.status,
+            user: active.user
+          };
+          property.currentBooking = property.activeBooking;
+        }
+      }
+      property.status = property.isAvailable ? 'available' : 'booked';
+      if (!property.isAvailable && property.currentBooking && property.currentBooking.endDate && new Date(property.currentBooking.endDate) < new Date()) {
+        property.status = 'awaiting_reset';
+      }
       return property;
-    });
+    }));
 
     res.json({ properties });
   } catch (error) {
     console.error('Error fetching all properties:', error);
     res.status(500).json({ message: 'Error fetching properties' });
+  }
+};
+
+// Allow property owner to reset availability after booking end date
+export const resetAvailability = async (req, res) => {
+  try {
+    const { id } = req.params; // property id
+    const property = await Property.findOne({ _id: id, owner: req.user.id });
+    if (!property) return res.status(404).json({ message: 'Property not found' });
+
+    if (!property.activeBooking) {
+      property.isAvailable = true;
+      property.bookedBy = null;
+      property.activeBooking = null;
+      await property.save();
+      return res.json({ property });
+    }
+
+    const booking = await Booking.findById(property.activeBooking);
+    if (!booking) {
+      property.isAvailable = true;
+      property.bookedBy = null;
+      property.activeBooking = null;
+      await property.save();
+      return res.json({ property });
+    }
+
+    const now = new Date();
+    if (booking.endDate > now) {
+      return res.status(400).json({ message: 'Booking has not ended yet' });
+    }
+
+    if (!['completed', 'cancelled', 'rejected'].includes(booking.status)) {
+      booking.status = 'completed';
+      await booking.save();
+    }
+
+    property.isAvailable = true;
+    property.bookedBy = null;
+    property.activeBooking = null;
+    await property.save();
+
+    res.json({ property });
+  } catch (error) {
+    console.error('Error resetting availability:', error);
+    res.status(500).json({ message: 'Error resetting availability' });
   }
 };
 

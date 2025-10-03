@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FaPlus, FaEdit, FaEye, FaTrash, FaHome, FaMapMarkerAlt, FaBed, FaBath, FaCalendar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
+import { getDisplayStatus } from '../../utils/status';
 import toast from 'react-hot-toast';
 
 const OwnerDashboard = () => {
@@ -27,6 +28,25 @@ const OwnerDashboard = () => {
       toast.error('Failed to fetch properties');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Unified status is provided by getDisplayStatus
+
+  const canResetProperty = (property) => {
+    if (!property) return false;
+    const status = getDisplayStatus(property, user, { perspective: 'owner' });
+    return status.label === 'Awaiting Reset';
+  };
+
+  const handleResetAvailability = async (propertyId) => {
+    try {
+      await client.post(`/properties/${propertyId}/reset-availability`);
+      toast.success('Property reset to Available');
+      fetchMyProperties();
+    } catch (error) {
+      console.error('Error resetting availability:', error);
+      toast.error(error?.response?.data?.message || 'Failed to reset availability');
     }
   };
 
@@ -193,113 +213,7 @@ const OwnerDashboard = () => {
         </div>
 
 
-        {/* Properties Grid */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">My Properties</h2>
-          </div>
-          
-          {properties.length === 0 ? (
-            <div className="p-8 text-center">
-              <FaHome className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No properties yet</h3>
-              <p className="text-gray-500 mb-6">
-                Get started by adding your first property to start earning rental income.
-              </p>
-              <Link
-                to="/add-property"
-                className="inline-flex items-center px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200"
-              >
-                <FaPlus className="mr-2" />
-                Add Your First Property
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-              {properties.map((property) => (
-                <motion.div
-                  key={property._id}
-                  whileHover={{ y: -5 }}
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
-                >
-                  {/* Property Image */}
-                  <div className="relative h-48 bg-gray-200">
-                    <img
-                      src={getImageUrl(property.images?.[0])}
-                      alt={property.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = '/placeholder-property.svg';
-                      }}
-                    />
-                    <div className="absolute top-2 right-2">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        property.isAvailable 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {property.isAvailable ? 'Available' : 'Unavailable'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Property Details */}
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-1">
-                      {property.title}
-                    </h3>
-                    
-                    <div className="flex items-center text-gray-600 mb-2">
-                      <FaMapMarkerAlt className="mr-2 text-gray-400" />
-                      <span className="text-sm">{property.location}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <span className="flex items-center">
-                          <FaBed className="mr-1" />
-                          {property.bedrooms || 0}
-                        </span>
-                        <span className="flex items-center">
-                          <FaBath className="mr-1" />
-                          {property.bathrooms || 0}
-                        </span>
-                      </div>
-                      <span className="text-lg font-bold text-primary-500">
-                        ₹{property.price?.toLocaleString()}
-                      </span>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex space-x-2">
-                      <Link
-                        to={`/properties/${property._id}`}
-                        className="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded text-sm font-medium hover:bg-blue-200 transition-colors duration-200 flex items-center justify-center"
-                      >
-                        <FaEye className="mr-1" />
-                        View
-                      </Link>
-                      <Link
-                        to={`/edit-property/${property._id}`}
-                        className="flex-1 bg-yellow-100 text-yellow-700 px-3 py-2 rounded text-sm font-medium hover:bg-yellow-200 transition-colors duration-200 flex items-center justify-center"
-                      >
-                        <FaEdit className="mr-1" />
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteProperty(property._id)}
-                        className="flex-1 bg-red-100 text-red-700 px-3 py-2 rounded text-sm font-medium hover:bg-red-200 transition-colors duration-200 flex items-center justify-center"
-                      >
-                        <FaTrash className="mr-1" />
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* My Properties section removed from Dashboard as requested */}
 
         {/* Bookings Section */}
         <div className="bg-white rounded-lg shadow">

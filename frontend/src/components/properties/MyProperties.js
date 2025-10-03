@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaEye, FaPlus, FaMapMarkerAlt, FaStar, FaBed, FaBath, FaRulerCombined } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
+import { getDisplayStatus } from '../../utils/status';
 import toast from 'react-hot-toast';
 
 const MyProperties = () => {
@@ -43,6 +44,22 @@ const MyProperties = () => {
       return `http://localhost:5000/api/images/${image.filename}`;
     }
     return '/placeholder-property.svg';
+  };
+
+  const canResetProperty = (property) => {
+    const s = getDisplayStatus(property, null, { perspective: 'owner' });
+    return s.label === 'Awaiting Reset';
+  };
+
+  const handleResetAvailability = async (propertyId) => {
+    try {
+      await client.post(`/properties/${propertyId}/reset-availability`);
+      toast.success('Property reset to Available');
+      fetchProperties();
+    } catch (error) {
+      console.error('Error resetting availability:', error);
+      toast.error(error?.response?.data?.message || 'Failed to reset availability');
+    }
   };
 
   if (loading) {
@@ -113,6 +130,8 @@ const MyProperties = () => {
                 onDelete={handleDeleteProperty}
                 index={index}
                 getImageUrl={getImageUrl}
+                canResetProperty={canResetProperty}
+                onResetAvailability={handleResetAvailability}
               />
             ))}
           </motion.div>
@@ -123,7 +142,7 @@ const MyProperties = () => {
 };
 
 // Property Card Component
-const PropertyCard = ({ property, onDelete, index, getImageUrl }) => {
+const PropertyCard = ({ property, onDelete, index, getImageUrl, canResetProperty, onResetAvailability }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -145,13 +164,9 @@ const PropertyCard = ({ property, onDelete, index, getImageUrl }) => {
           ₹{property.price?.toLocaleString()}/month
         </div>
         <div className="absolute top-3 right-3">
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-            property.isAvailable 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
-          }`}>
-            {property.isAvailable ? 'Available' : 'Unavailable'}
-          </span>
+          {(() => { const s = getDisplayStatus(property, null, { perspective: 'owner' }); return (
+            <span className={`px-2 py-1 text-xs font-medium rounded-full ${s.cls}`}>{s.label}</span>
+          ); })()}
         </div>
       </div>
 
@@ -212,6 +227,14 @@ const PropertyCard = ({ property, onDelete, index, getImageUrl }) => {
             <FaEdit className="mr-2" />
             Edit
           </Link>
+          {canResetProperty && canResetProperty(property) && (
+            <button
+              onClick={() => onResetAvailability && onResetAvailability(property._id)}
+              className="flex-1 flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
+            >
+              Reset
+            </button>
+          )}
           
           <button
             onClick={() => onDelete(property._id)}
