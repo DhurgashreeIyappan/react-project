@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
   phone: { type: String },
   role: { type: String, enum: ['owner', 'renter'], default: 'renter' },
   bio: { type: String },
-  profilePicture: { type: String }
+  profilePicture: { type: String },
+  
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {

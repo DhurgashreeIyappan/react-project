@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 
 const PropertyDetail = () => {
   const { id } = useParams();
-  const { user, isOwner, isRenter } = useAuth();
+  const { user, isOwner, isRenter, isAuthenticated } = useAuth();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
@@ -180,12 +180,14 @@ const PropertyDetail = () => {
           </div>
         )}
         
-        {/* Status Badge */}
+        {/* Status Badge - hidden when logged out */}
+        {isAuthenticated && (
           <div className="absolute top-6 left-6">
           {(() => { const s = getDetailStatus(); return (
             <span className={`px-3 py-1 text-sm font-semibold rounded-full ${s.cls}`}>{s.label}</span>
           ); })()}
           </div>
+        )}
 
         {/* Like Button */}
         <button
@@ -341,12 +343,14 @@ const PropertyDetail = () => {
                   <span className="font-semibold">{property.petFriendly ? 'Yes' : 'No'}</span>
                 </div>
                 
-                <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                  <span className="text-gray-600">Status:</span>
-                  {(() => { const s = getDetailStatus(); return (
-                    <span className={`font-semibold px-3 py-1 rounded-full text-sm ${s.cls}`}>{s.label}</span>
-                  ); })()}
-                </div>
+                {isAuthenticated && (
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <span className="text-gray-600">Status:</span>
+                    {(() => { const s = getDetailStatus(); return (
+                      <span className={`font-semibold px-3 py-1 rounded-full text-sm ${s.cls}`}>{s.label}</span>
+                    ); })()}
+                  </div>
+                )}
 
                 {/* Owner Information */}
                 {property.owner && (
@@ -366,9 +370,15 @@ const PropertyDetail = () => {
               </div>
 
               {/* Booking Button - Only show for renters who don't own this property and when Available */}
-              {isRenter() && !isPropertyOwner && getDetailStatus().label === 'Available' && (
+              {isRenter() && !isPropertyOwner && (
                 <button 
-                  onClick={() => setShowBookingModal(true)}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      toast.error('Please log in to book this property');
+                      return;
+                    }
+                    if (getDetailStatus().label === 'Available') setShowBookingModal(true);
+                  }}
                   className="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-4 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 mt-6"
                 >
                   Book This Property

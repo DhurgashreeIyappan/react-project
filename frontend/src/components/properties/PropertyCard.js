@@ -18,7 +18,7 @@ import {
 import { motion } from 'framer-motion';
 
 const PropertyCard = ({ property, showLink = true }) => {
-  const { user, isOwner } = useAuth();
+  const { user, isOwner, isAuthenticated } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
@@ -158,12 +158,14 @@ const PropertyCard = ({ property, showLink = true }) => {
           {formatPrice(property.price)}/month
         </div>
 
-        {/* Status Badge */}
-        <div className="absolute top-3 right-3">
-          {(() => { const s = getStatus(); return (
-            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${s.cls}`}>{s.label}</span>
-          ); })()}
-        </div>
+        {/* Status Badge - hide for logged-out users */}
+        {isAuthenticated && (
+          <div className="absolute top-3 right-3">
+            {(() => { const s = getStatus(); return (
+              <span className={`px-3 py-1 text-xs font-semibold rounded-full ${s.cls}`}>{s.label}</span>
+            ); })()}
+          </div>
+        )}
 
         {/* Property Type Badge */}
         <div className="absolute bottom-3 right-3 bg-surface/90 backdrop-blur-sm text-text-primary px-3 py-1 rounded-lg text-xs font-medium">

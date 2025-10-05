@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import { validationResult } from 'express-validator';
+import crypto from 'crypto';
+// Forgot password functionality removed
 
 const signToken = (user) => {
   return jwt.sign(
@@ -59,5 +61,8 @@ export const updateProfile = async (req, res) => {
   );
   res.json({ user });
 };
+
+
+// forgotPassword endpoint removed
 
 
