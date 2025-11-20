@@ -29,6 +29,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://property-rental-marketplace-qlkg.vercel.app",
   "https://property-rental-marketplace-qwpj.vercel.app",
+  "https://property-rental-marketplace-suof.vercel.app",
   process.env.CLIENT_URL,
 ].filter(Boolean);
 
