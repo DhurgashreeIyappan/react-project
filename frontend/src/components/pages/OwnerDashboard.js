@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaPlus, FaEdit, FaEye, FaTrash, FaHome, FaMapMarkerAlt, FaBed, FaBath, FaCalendar } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import client from '../../api/client';
+import client, { getImageUrl } from '../../api/client';
 import { getDisplayStatus } from '../../utils/status';
 import toast from 'react-hot-toast';
 
@@ -87,12 +87,6 @@ const OwnerDashboard = () => {
     }
   };
 
-  const getImageUrl = (image) => {
-    if (image && image.filename) {
-      return `http://localhost:5000/api/images/${image.filename}`;
-    }
-    return '/placeholder-property.svg';
-  };
 
   if (loading) {
     return (
@@ -236,7 +230,7 @@ const OwnerDashboard = () => {
                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
                             {booking.property?.images?.[0] ? (
                               <img
-                                src={getImageUrl(booking.property.images[0])}
+                                src={booking.property.images[0]?.filename ? getImageUrl(booking.property.images[0].filename) : '/placeholder-property.svg'}
                                 alt={booking.property.title}
                                 className="w-full h-full object-cover"
                               />

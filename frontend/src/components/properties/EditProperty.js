@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FaHome, FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaUpload, FaTimes, FaSave } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import client from '../../api/client';
+import client, { getImageUrl } from '../../api/client';
 
 const EditProperty = () => {
   const { id } = useParams();
@@ -253,12 +253,6 @@ const EditProperty = () => {
     }
   };
 
-  const getImageUrl = (image) => {
-    if (image && image.filename) {
-      return `http://localhost:5000/api/images/${image.filename}`;
-    }
-    return '/placeholder-property.svg';
-  };
 
   // Check if user is owner before rendering
   if (!isOwner()) {
@@ -577,7 +571,7 @@ const EditProperty = () => {
                   {existingImages.map((image, index) => (
                     <div key={index} className="relative">
                       <img
-                        src={getImageUrl(image)}
+                        src={image?.filename ? getImageUrl(image.filename) : '/placeholder-property.svg'}
                         alt={`Property ${index + 1}`}
                         className="w-full h-24 object-cover rounded-lg"
                                                  onError={(e) => {

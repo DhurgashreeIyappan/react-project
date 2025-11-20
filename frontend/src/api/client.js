@@ -15,6 +15,13 @@ export const setAuthToken = (token) => {
   }
 };
 
+// Helper to get image URL - extracts base URL from apiBaseUrl (removes /api if present)
+export const getImageUrl = (filename) => {
+  if (!filename) return '/placeholder-property.svg';
+  const baseUrl = apiBaseUrl.replace('/api', '') || 'http://localhost:5000';
+  return `${baseUrl}/api/images/${filename}`;
+};
+
 export default client;
 
 

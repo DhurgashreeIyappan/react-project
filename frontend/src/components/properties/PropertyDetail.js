@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { getImageUrl } from '../../api/client';
 import { FaMapMarkerAlt, FaBed, FaBath, FaRulerCombined, FaStar, FaHeart, FaCalendar, FaUser, FaEdit, FaChevronLeft, FaChevronRight, FaTrash, FaTimes } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import client from '../../api/client';
@@ -42,12 +43,6 @@ const PropertyDetail = () => {
     fetchProperty();
   }, [id]);
 
-  const getImageUrl = (image) => {
-    if (image && image.filename) {
-      return `http://localhost:5000/api/images/${image.filename}`;
-    }
-    return '/placeholder-property.svg';
-  };
 
   const nextImage = () => {
     if (property.images && property.images.length > 1) {
@@ -132,7 +127,7 @@ const PropertyDetail = () => {
           <>
             <div className="w-full flex items-center justify-center" style={{ maxHeight: '70vh' }}>
               <img
-                src={getImageUrl(property.images[currentImageIndex])}
+                src={property.images?.[currentImageIndex]?.filename ? getImageUrl(property.images[currentImageIndex].filename) : '/placeholder-property.svg'}
                 alt={property.title}
                 className="max-h-[70vh] w-auto max-w-full object-contain"
                 onError={(e) => {

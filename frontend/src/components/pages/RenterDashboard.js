@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FaSearch, FaCalendar, FaBookmark, FaEye } from 'react-icons/fa';
 import PropertyCard from '../properties/PropertyCard';
 import { motion } from 'framer-motion';
-import client from '../../api/client';
+import client, { getImageUrl } from '../../api/client';
 import { getDisplayStatus } from '../../utils/status';
 import toast from 'react-hot-toast';
 
@@ -55,12 +55,6 @@ const RenterDashboard = () => {
     }
   };
 
-  const getImageUrl = (image) => {
-    if (image && image.filename) {
-      return `http://localhost:5000/api/images/${image.filename}`;
-    }
-    return '/placeholder-property.svg';
-  };
 
   const getBookingStatusColor = (status) => {
     switch (status) {
@@ -158,7 +152,7 @@ const RenterDashboard = () => {
                     <div className="flex items-start gap-3">
                       <div className="w-28 h-20 bg-gray-100 overflow-hidden rounded">
                         <img
-                          src={getImageUrl(nextProperty.images?.[0])}
+                          src={nextProperty.images?.[0]?.filename ? getImageUrl(nextProperty.images[0].filename) : '/placeholder-property.svg'}
                           alt={nextProperty.title}
                           className="w-full h-full object-cover"
                           onError={(e) => { e.target.src = '/placeholder-property.svg'; }}

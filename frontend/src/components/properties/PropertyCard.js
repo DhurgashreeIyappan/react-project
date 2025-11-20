@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getDisplayStatus } from '../../utils/status';
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../../api/client';
 import { 
   FaHeart, 
   FaMapMarkerAlt, 
@@ -23,12 +24,6 @@ const PropertyCard = ({ property, showLink = true }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageLoading, setImageLoading] = useState(true);
 
-  const getImageUrl = (image) => {
-    if (image && image.filename) {
-      return `http://localhost:5000/api/images/${image.filename}`;
-    }
-    return '/placeholder-property.svg';
-  };
 
   const nextImage = () => {
     if (property.images && property.images.length > 1) {
@@ -85,7 +80,7 @@ const PropertyCard = ({ property, showLink = true }) => {
         
         {/* Main Image */}
         <img
-          src={getImageUrl(property.images?.[currentImageIndex])}
+          src={property.images?.[currentImageIndex]?.filename ? getImageUrl(property.images[currentImageIndex].filename) : '/placeholder-property.svg'}
           alt={property.title}
           className={`w-full h-full object-cover transition-all duration-500 ${
             imageLoading ? 'opacity-0' : 'opacity-100'

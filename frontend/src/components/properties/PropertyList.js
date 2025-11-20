@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { FaSearch, FaFilter, FaTimes, FaMapMarkerAlt, FaBed, FaBath } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
-import client from '../../api/client';
+import client, { getImageUrl } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { getDisplayStatus } from '../../utils/status';
 
@@ -410,12 +410,6 @@ const PropertyList = () => {
 // Property Card Component
 const PropertyCard = ({ property }) => {
   const { isAuthenticated } = useAuth();
-  const getImageUrl = (image) => {
-    if (image && image.filename) {
-      return `http://localhost:5000/api/images/${image.filename}`;
-    }
-    return '/placeholder-property.svg';
-  };
 
   return (
     <motion.div
@@ -426,7 +420,7 @@ const PropertyCard = ({ property }) => {
       <div className="relative bg-gray-100">
         <div className="w-full" style={{ aspectRatio: '16 / 9' }}>
           <img
-            src={getImageUrl(property.images?.[0])}
+            src={property.images?.[0]?.filename ? getImageUrl(property.images[0].filename) : '/placeholder-property.svg'}
             alt={property.title}
             className="w-full h-full object-contain"
             onError={(e) => { e.target.src = '/placeholder-property.svg'; }}

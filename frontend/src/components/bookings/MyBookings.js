@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { FaCalendar, FaMapMarkerAlt, FaClock, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import client from '../../api/client';
+import client, { getImageUrl } from '../../api/client';
 
 // Helper functions moved outside component to be accessible
 const getStatusColor = (status) => {
@@ -200,7 +200,7 @@ const BookingCard = ({ booking, isOwner, onStatusUpdate, index, getStatusColor, 
               <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
                 {booking.property?.images?.[0] ? (
                   <img
-                    src={booking.property.images[0]?.filename ? `http://localhost:5000/api/images/${booking.property.images[0].filename}` : (booking.property.images[0] || '/placeholder-property.svg')}
+                    src={booking.property.images[0]?.filename ? getImageUrl(booking.property.images[0].filename) : '/placeholder-property.svg'}
                     alt={booking.property?.title || 'Property'}
                     className="w-full h-full object-cover"
                     onError={(e) => { e.target.src = '/placeholder-property.svg'; }}

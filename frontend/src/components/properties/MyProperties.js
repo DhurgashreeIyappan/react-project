@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaEye, FaPlus, FaMapMarkerAlt, FaStar, FaBed, FaBath, FaRulerCombined } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import client from '../../api/client';
+import client, { getImageUrl } from '../../api/client';
 import { getDisplayStatus } from '../../utils/status';
 import toast from 'react-hot-toast';
 
@@ -39,12 +39,6 @@ const MyProperties = () => {
     }
   };
 
-  const getImageUrl = (image) => {
-    if (image && image.filename) {
-      return `http://localhost:5000/api/images/${image.filename}`;
-    }
-    return '/placeholder-property.svg';
-  };
 
   const canResetProperty = (property) => {
     const s = getDisplayStatus(property, null, { perspective: 'owner' });
@@ -153,7 +147,7 @@ const PropertyCard = ({ property, onDelete, index, getImageUrl, canResetProperty
       {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={getImageUrl(property.images?.[0])}
+          src={property.images?.[0]?.filename ? getImageUrl(property.images[0].filename) : '/placeholder-property.svg'}
           alt={property.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           onError={(e) => {
