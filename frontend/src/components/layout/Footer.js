@@ -13,10 +13,10 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { name: 'Facebook', icon: <FaFacebook />, href: 'https://facebook.com/RentNest' },
-    { name: 'Twitter', icon: <FaTwitter />, href: 'https://twitter.com/RentNest' },
-    { name: 'Instagram', icon: <FaInstagram />, href: 'https://instagram.com/RentNest' },
-    { name: 'LinkedIn', icon: <FaLinkedin />, href: 'https://linkedin.com/company/rentnest' },
+    { name: 'Facebook', icon: <FaFacebook /> },
+    { name: 'Twitter', icon: <FaTwitter /> },
+    { name: 'Instagram', icon: <FaInstagram /> },
+    { name: 'LinkedIn', icon: <FaLinkedin /> },
   ];
 
   return (

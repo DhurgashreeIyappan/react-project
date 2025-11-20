@@ -129,7 +129,7 @@ const OwnerDashboard = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="bg-white rounded-lg shadow p-6"
@@ -177,22 +177,6 @@ const OwnerDashboard = () => {
             </div>
           </motion.div>
 
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="bg-white rounded-lg shadow p-6"
-          >
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <FaBed className="text-purple-600 text-xl" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Bedrooms</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {properties.reduce((sum, p) => sum + (p.bedrooms || 0), 0)}
-                </p>
-              </div>
-            </div>
-          </motion.div>
 
           <motion.div
             whileHover={{ scale: 1.05 }}
