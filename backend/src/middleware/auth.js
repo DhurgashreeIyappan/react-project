@@ -3,6 +3,10 @@ import jwt from 'jsonwebtoken';
 export const authRequired = (roles = []) => {
   const rolesArray = Array.isArray(roles) ? roles : [roles];
   return (req, res, next) => {
+    // Allow OPTIONS requests to pass through for CORS preflight
+    if (req.method === 'OPTIONS') {
+      return next();
+    }
     try {
       const header = req.headers.authorization || '';
       const token = header.startsWith('Bearer ') ? header.substring(7) : null;

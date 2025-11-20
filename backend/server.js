@@ -27,26 +27,28 @@ const app = express();
 ------------------------------------------------------ */
 const allowedOrigins = [
   "http://localhost:3000",
+  "https://property-rental-marketplace-qlkg.vercel.app",
   process.env.CLIENT_URL,
-  "https://property-rental-marketplace-qhuy.vercel.app",
-  "https://property-rental-marketplace-aaad.vercel.app"
-];
+].filter(Boolean);
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Allow Postman / mobile apps
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // Allow Postman / mobile apps
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    console.log("❌ BLOCKED ORIGIN BY CORS:", origin);
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      console.log("❌ BLOCKED ORIGIN BY CORS:", origin);
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 /* ------------------------------------------------------
    Other Middleware
