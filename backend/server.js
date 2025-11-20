@@ -15,27 +15,60 @@ import contentRoutes from './src/routes/content.routes.js';
 import contactRoutes from './src/routes/contact.routes.js';
 import { notFoundHandler, errorHandler } from './src/middleware/error.js';
 
-dotenv.config(); // Loads .env file
+dotenv.config(); // Loads .env
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Middleware
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
+/* ------------------------------------------------------
+   🟢 FIXED CORS CONFIGURATION
+------------------------------------------------------ */
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.CLIENT_URL,
+  "https://property-rental-marketplace-qhuy.vercel.app",
+  "https://property-rental-marketplace-aaad.vercel.app"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Allow Postman / mobile apps
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("❌ BLOCKED ORIGIN BY CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
+
+/* ------------------------------------------------------
+   Other Middleware
+------------------------------------------------------ */
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-// Serve static files from uploads folder
+/* ------------------------------------------------------
+   Static File Handling
+------------------------------------------------------ */
 app.use('/api/images', express.static(path.join(__dirname, 'uploads')));
 
-// Healthcheck
+/* ------------------------------------------------------
+   Health Check
+------------------------------------------------------ */
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-// Routes
+/* ------------------------------------------------------
+   Routes
+------------------------------------------------------ */
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/renter', renterRoutes);
@@ -44,18 +77,24 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/contact', contactRoutes);
 
-// Error handlers
+/* ------------------------------------------------------
+   Error Handlers
+------------------------------------------------------ */
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB Atlas
-connectDB(process.env.MONGO_URI).then(() => { // Pass Atlas URI from .env
-  app.listen(PORT, () => {
-    console.log(`Backend listening on port ${PORT}`);
+/* ------------------------------------------------------
+   DB + Server Start
+------------------------------------------------------ */
+connectDB(process.env.MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Backend listening on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to start server', err);
+    process.exit(1);
   });
-}).catch((err) => {
-  console.error('Failed to start server', err);
-  process.exit(1);
-});
